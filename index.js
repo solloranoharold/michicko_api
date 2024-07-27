@@ -9,7 +9,7 @@ app.use(cors({
   origin:  process.env.api_host, // Frontend URL
   credentials: true // Allow credentials (cookies)
 }))
-
+console.log(process.env.api_host)
 const httpServer = http.createServer({}, app)
 const io = require('socket.io')(httpServer)
 
@@ -35,6 +35,9 @@ io.on("connection", (socket) => {
   });
 });
 
+app.get('/', (req, res) => { 
+  res.send('HELLO WORLD')
+})
 
 app.use('/employees' , require('./routes/employees/'))
 app.use('/accounts' , require('./routes/accounts/'))
