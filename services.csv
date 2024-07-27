@@ -1,0 +1,231 @@
+category_id,service_name,price,commissions,organization_id
+6,Hand Massage (30 mins),300,20,1
+6,Foot Massage,350,20,1
+6,Hand + Foot Massage (1 hour),600,20,1
+6,Big Rhinestone,70,20,1
+6,Gel Removal,100,20,1
+6,Polish Only (local),100,20,1
+6,Polish Only (imported),150,20,1
+6,Gonispa Hair Serum,300,40,1
+6,Revlon Treatment,800,20,1
+6,L'oreal Metal Detox Treatment,2000,20,1
+6,L'oreal Blonde Studio,3900,,1
+6,Metal DX Salon Treatment,2000,,1
+6,Calvin Tu Shampoo (Silver),3000,,1
+6,Calvin Tu Conditioner (Sluver),3000,,1
+6,Calvin Tu Shampoo (Beige),3000,,1
+6,Calvin Tu Conditioner (Beige),3000,,1
+4,Eyebrow Threading,120,20,1
+4,Eyebrow Tinting,350,20,1
+1,Color (Short),799,40,1
+1,Color (Mid),999,40,1
+1,Color (Long),1299,40,1
+1,Rooting,500,,1
+1,Classic Balayage (Short),1699,40,1
+1,Classic Balayage (Mid),1999,40,1
+1,Classic Balayage (Long),2299,40,1
+1,Signature Balayage (Short),2999,40,1
+1,Signature Balayage (Mid),3499,40,1
+1,Signature Balayage (Long),3799,40,1
+1,Brazilian Keratin (Short),1299,40,1
+1,Brazilian Keratin (Mid),1499,40,1
+1,Brazilian Keratin (Long),1699,40,1
+1,Brazilian Botox Cysteine (Short),1499,40,1
+1,Brazilian Botox Cysteine (Mid),1799,40,1
+1,Brazilian Botox Cysteine (Long),1999,40,1
+1,Keratin Pro Max (Short),2299,40,1
+1,Keratin Pro Max (Mid),2599,40,1
+1,Keratin Pro Max (Long),2799,40,1
+1,Rebond (Short),999,40,1
+1,Rebond (Mid),1299,40,1
+1,Rebond (Long),1499,40,1
+1,L'Oreal Xtenso Oleoshape (Short),4299,40,1
+1,L'Oreal Xtenso Oleoshape (Mid),5299,40,1
+1,L'Oreal Xtenso Oleoshape (Long),5699,40,1
+1,Color + Rebond (Short),1699,40,1
+1,Color + Rebond (Mid),2199,40,1
+1,Color + Rebond (Long),2699,40,1
+1,Color + Rebond + Cysteine (Short),3199,40,1
+1,Color + Rebond + Cysteine (Mid),3799,40,1
+1,Color + Rebond + Cysteine (Long),4299,40,1
+1,Color + Rebond + Keratin Pro Max (Short),4499,40,1
+1,Color + Rebond + Keratin Pro Max (Mid),4899,40,1
+1,Color + Rebond + Keratin Pro Max (Long),5899,40,1
+1,Color + L'Oreal Xtenso (Short),2699,40,1
+1,Color + L'Oreal Xtenso (Mid),3399,40,1
+1,Color + L'Oreal Xtenso (Long),3899,40,1
+1,Color + L'Oreal Xtenso + Cysteine (Short),4099,40,1
+1,Color + L'Oreal Xtenso + Cysteine (Mid),4799,40,1
+1,Color + L'Oreal Xtenso + Cysteine (Long),5299,40,1
+1,Color + Xtenso + Keratin Pro Max (Short),4899,40,1
+1,Color + Xtenso + Keratin Pro Max (Mid),5599,40,1
+1,Color + Xtenso + Keratin Pro Max (Long),6099,40,1
+1,Color + Keratin (Short),1499,40,1
+1,Color + Keratin (Mid),1699,,1
+1,Color + Keratin (Mid),1999,,1
+1,Color + Cysteine (Short),2199,40,1
+1,Color + Cysteine (Mid),2599,40,1
+1,Color + Cysteine (Long),2899,40,1
+1,Color + Keratin Pro Max (Short),2999,40,1
+1,Color + Keratin Pro Max (Mid),3399,40,1
+1,Color + Keratin Pro Max (Long),3699,40,1
+1,Color + U Collagen Treatment (Short),2999,40,1
+1,Color + U Collagen Treatment (Mid),3399,40,1
+1,Color + U Collagen Treatment (Long),3699,40,1
+1,Classic Balayage + Cysteine (Short),3499,40,1
+1,Classic Balayage + Cysteine (Mid),3699,40,1
+1,Classic Balayage + Cysteine (Long),3899,40,1
+1,Classic Balayage + Keratin Pro Max (Short),4299,40,1
+1,Classic Balayage + Keratin Pro Max (Mid),4499,40,1
+1,Classic Balayage + Keratin Pro Max (Long),4999,40,1
+1,Classic Balayage + Rebond (Short),2699,40,1
+1,Classic Balayage + Rebond (Mid),3199,40,1
+1,Classic Balayage + Rebond (Long),3699,40,1
+1,Classic Balayage + Rebond + Cysteine (Short),4499,40,1
+1,Classic Balayage + Rebond + Cysteine (Mid),5199,40,1
+1,Classic Balayage + Rebond + Cysteine (Long),5299,40,1
+1,Classic Balayage + Xtenso + Cysteine (Short),5798,40,1
+1,Classic Balayage + Xtenso + Cysteine (Mid),6498,40,1
+1,Classic Balayage + Xtenso + Cysteine (Long),6598,40,1
+1,Signature Balayage + Cysteine (Short),4499,40,1
+1,Signature Balayage + Cysteine (Mid),5299,40,1
+1,Signature Balayage + Cysteine (Long),5799,40,1
+1,Signature Balayage + Keratin Pro Max (Short),6099,40,1
+1,Signature Balayage + Keratin Pro Max (Mid),6499,40,1
+1,Signature Balayage + Keratin Pro Max (Long),6999,40,1
+1,Rebond + Cysteine (Short),2499,40,1
+1,Rebond + Cysteine (Mid),3099,40,1
+1,Rebond + Cysteine (Long),3499,40,1
+1,Rebond + Keratin Pro Max (Short),3299,40,1
+1,Rebond + Keratin Pro Max (Mid),3899,40,1
+1,Rebond + Keratin Pro Max (Long),4299,40,1
+1,Xtenso + Cysteine (Short),3499,40,1
+1,Xtenso + Cysteine (Mid),4299,40,1
+1,Xtenso + Cysteine (Long),4699,40,1
+1,Xtenso + Keratin Pro Max (Short),4299,40,1
+1,Xtenso + Keratin Pro Max (Mid),5299,40,1
+1,Xtenso + Keratin Pro Max (Long),5699,40,1
+1,ICURE Elixir Hair Masque (Short),599,40,1
+1,ICURE Elixir Hair Masque (Mid),699,40,1
+1,ICURE Elixir Hair Masque (Long),799,40,1
+1,Hair Cut,200,20,1
+1,Men's Color,500,,1
+1,Scalp Treatment,1500,20,1
+1,OctobeHair Fest Balayage,2999,20,1
+1,Olaplex 1,2000,20,1
+1,Luxliss Cysteine (Short),2299,,1
+1,Luxliss Cysteine (Mid),2699,,1
+1,Luxliss Cysteine (Long),3299,,1
+1,Men's Fashion Color,3499,40,1
+1,Yogi Care 2 Mask,500,20,1
+1,Premium Color,4499,,1
+1,Color + Amazon,6599,,1
+1,Amazon,5599,,1
+1,Color (Sept Promo),500,40,1
+1,Hair Mask (Sept Promo),500,40,1
+1,Color + Keratin (Sept Promo),1500,40,1
+1,Rebond (Sept Promo),1000,40,1
+1,Teachers Day Promo,1000,20,1
+1,Hair Extension (Short),7000,,1
+1,Hair Extension (Mid/Bra Length),10000,,1
+1,Hair Extension (Long/Waist),12000,,1
+1,Hair Extension (XL/Below Waist),15000,,1
+1,ARM Salon Treatment,4500,,1
+1,Women haircut,400,,1
+1,March Promo: Balayage,4500,,1
+1,March Promo: Color,2500,,1
+1,March Promo: Premium Color,3500,,1
+1,Olaplex Salon Treatment,2000,,1
+1,Fashion Color + Treatment,8500,,1
+1,Loreal Hydrating Hair Spa,1500,,1
+1,Hair Set,800,,1
+1,Blow Dry,400,,1
+8,Bleach Redo,500,40,1
+2,Manicure (local),150,20,1
+2,Manicure (imported),180,20,1
+2,Gel Manicure,600,20,1
+2,Gel French Manicure,680,20,1
+2,Gel Polish Only,400,20,1
+2,Hand Spa Manicure,390,20,1
+2,Hand Spa Paraffin,400,20,1
+2,Pedicure (local),180,20,1
+2,Pedicure (imported),230,20,1
+2,Gel Pedicure,650,20,1
+2,Gel French Pedicure,730,20,1
+2,Gel Polish Only (Toes),400,20,1
+2,Foot Spa Pedicure,490,20,1
+2,Foot Spa Gel Pedicure,950,20,1
+2,Foot Spa Only,350,20,1
+2,Foot Spa + Paraffin,450,20,1
+2,Gel Foot Spa,950,20,1
+2,Mani + Pedi (local),280,20,1
+2,Mani + Pedi (Imported),350,20,1
+2,Mani + Pedi (Gel),1200,20,1
+2,"Hand All Care (Spa, Paraffin, Manicure)",550,20,1
+2,"Foot All Care (Spa, Paraffin, Pedicure)",700,20,1
+2,Hand & Foot All Care,1200,20,1
+2,Mani + Pedi + Foot Spa (Local),600,20,1
+2,Mani + Pedi + Foot Spa (Imported),670,20,1
+2,Mani + Pedi + Foot Spa (Gel),1500,20,1
+2,Nail Extension Removal,300,20,1
+2,Mini Manicure,100,20,1
+2,Mini Pedicure,130,20,1
+2,Mini Mani + Pedi,220,20,1
+2,Mini All Care (Mani + Pedi + Cleaning),350,20,1
+2,Short Nail Ext + Gel Polish + Pedicure,1450,20,1
+2,Medium Nail Ext + Gel Polish + Pedicure,1550,10,1
+2,Long Nail Ext + Gel Polish + Pedicure,1650,10,1
+2,Nail Art Stamp,150,20,1
+2,Nail Stone Embellishment (per nail),50,20,1
+2,Gel (Sept Promo),500,20,1
+2,Footspa Pedi (Sept Promo),400,20,1
+7,Ashley Hair Serum,350,10,1
+7,Purple Shampoo,700,20,1
+7,Olaplex 3,2500,20,1
+7,L'oreal Hair Spa,1500,20,1
+7,Banana Foot Cream,200,10,1
+7,Keratin Protein Max Booster,800,20,1
+7,L'Oreal Ever Pure Sulfate Free Shampoo,700,20,1
+7,Silver Shampoo & Conditioner,1000,20,1
+7,Silver Shampoo,600,20,1
+7,L'oreal Silver Shampoo and Conditioner,3000,20,1
+7,L'oreal Metal Detox Shampoo,1600,20,1
+7,L'oreal Silver Shampoo,1500,20,1
+7,L'oreal Silver Conditioner,1700,20,1
+7,L'oreal Anti-Dundruff Shampoo,1500,20,1
+7,Olaplex 6,2500,20,1
+7,Scalp Shampoo,1500,20,1
+7,Scalp Shampoo and Treatment,3000,10,1
+7,Serioxyl Set,4000,10,1
+7,L'Oreal Hair Mask 300ML,1500,,1
+7,Monea Shampoo,500,,1
+7,Morea Conditioner,500,,1
+7,ARM Shampoo,1500,,1
+7,AR Mask,3000,,1
+7,ARM Serum,2000,,1
+7,ARM Live-in Mask,2500,,1
+7,Metal Detox Mask,2500,,1
+7,Olaplex Dry Shampoo,2500,,1
+7,Olaplex 7,2500,,1
+7,Olaplex 9,2500,,1
+7,Olaplex 0,2500,,1
+7,Serioxyl Shampoo,1500,,1
+7,Serioxyl Serum,2500,,1
+7,Olaplex 4,2500,,1
+7,Olaplex 4P,2500,,1
+7,Olaplex 4D,2500,,1
+7,Olaplex 5,2500,,1
+7,Olaplex 5P,2500,,1
+12,Premium Color Aniv Promo 2024,2250,,1
+12,Balayage Aniv Promo 2024,3250,,1
+11,Spa Party,14200,0,1
+10,Make Up,800,20,1
+10,Hair Style,600,20,1
+10,Hair Style & Make Up,2500,20,1
+10,Hair & Make Up (Child),800,20,1
+9,Tip,100,100,1
+5,Underarm Wax,220,20,1
+5,Half Leg Wax,450,20,1
+5,Full Leg Wax,550,20,1
+5,Upper Lip Wax,150,20,1
+5,Chin Wax,300,20,1
