@@ -113,5 +113,17 @@ router.get('/searchAccount/:position/:organization_id/:search', async (req, res)
       }
 })
 
+// 
 
+router.post('/updateAccountPassword', async(req, res) => { 
+   let token = req.headers.authorization
+  let verify = verifyCookies(token)
+  if (typeof verify === 'object') {
+        let data = await Accounts.updateAccountPassword(req.body)
+        // console.log(data ,'loadEmployees' )
+        res.send(data)
+      } else {
+        res.status(403).json({error:"Unauthorized Access"})
+      }
+})
 module.exports = router

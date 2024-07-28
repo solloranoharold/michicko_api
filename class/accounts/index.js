@@ -78,6 +78,11 @@ module.exports = new class Accounts {
             return await updateAccount(data)
         }
     }
+    async updateAccountPassword(data) {
+        let password = hashPassword(data.password)
+        data.password = password
+        return await updateAccount( data )
+    }
     async updateSessionAccountStatus( data ) {
          console.log('/updateSessionAccountStatus')
         return await updateAccount(data)
