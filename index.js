@@ -7,7 +7,8 @@ const http = require('http')
 const app = express()
 app.use(cors({
   origin:  process.env.api_host, // Frontend URL
-  credentials: true // Allow credentials (cookies)
+  credentials: true, // Allow credentials (cookies)
+  methods: ["GET", "POST"],
 }))
 console.log(process.env.api_host)
 const httpServer = http.createServer({}, app)
