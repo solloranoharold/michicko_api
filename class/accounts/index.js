@@ -1,11 +1,32 @@
 const CryptoJS = require("crypto-js")
 require('dotenv').config()
+const moment = require('moment')
 const passwordSalt = process.env.passwordSalt
 const connection = require('../dbConnections')
 const {pad } = require('../generateID')
 module.exports = new class Accounts { 
     constructor(){}
 
+    async evaluateAccountStatus( organization_id , status ) {
+        let orgAccounts = await this.getAccountsPerOrg(organization_id)
+        for (let x = 0; x < orgAccounts.length; x++){
+            orgAccounts[x].account_status = status 
+            orgAccounts[x].date_created = moment(orgAccounts[x].date_created).format('YYYY-MM-DD HH:mm:ss')
+            await updateAccount( orgAccounts[x])
+        }
+
+        return await status 
+    }
+
+    getAccountsPerOrg(  organization_id  ) {
+        return new Promise(resolve => {
+            let sql = `SELECT * FROM tbl_accounts where organization_id = '${organization_id}'`
+             connection.query(sql, function (error, results, fields) {
+                 console.log(results , 'searchAccount')
+                resolve(results)
+            })
+        })
+    }
      loginUsers( username , password ){
         return new Promise((resolve , reject)=>{ 
             let sql = `SELECT A.*,B.*,C.*,D.*,B.position AS account_position FROM tbl_accounts A 
@@ -40,7 +61,7 @@ module.exports = new class Accounts {
                  OR C.last_name LIKE '%${search}%'
                 OR C.first_name LIKE '%${search}%'
                 AND A.organization_id ='${organization_id}' 
-                AMD A.employee_id != '${employee_id}'
+                and A.employee_id != '${employee_id}'
                 `
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
@@ -73,8 +94,11 @@ module.exports = new class Accounts {
           data.password = hashPassword(data.password)
            return await insertAccount(data)
          } else {
-            let password = decryptPassword(data.password)
-            data.password = hashPassword(password)
+             if (data.password) {
+                let password = decryptPassword(data.password)
+                data.password = hashPassword(password)
+             }
+           
             return await updateAccount(data)
         }
     }
@@ -82,6 +106,10 @@ module.exports = new class Accounts {
         let password = hashPassword(data.password)
         data.password = password
         return await updateAccount( data )
+    }
+    async resetAccountPassword( data ) {
+        data.password = hashPassword(data.username)
+        return await updateAccount(data)
     }
     async updateSessionAccountStatus( data ) {
          console.log('/updateSessionAccountStatus')

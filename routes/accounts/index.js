@@ -35,7 +35,7 @@ router.post('/login' , async(req,res)=>{
     let data = await Accounts.loginUsers(username, password)
     console.log(data)
     if (data.length == 0 ) 
-      res.send({ status: 403, error: "INVALID LOGIN" })
+      res.send({  error: "USERNAME AND PASSWORD NOT MATCHED" })
     else {
        let user = JSON.parse(JSON.stringify(data[0]))
       let token = jwt.sign( user, mySecretKey ,{ expiresIn:'1d'})
@@ -120,6 +120,31 @@ router.post('/updateAccountPassword', async(req, res) => {
   let verify = verifyCookies(token)
   if (typeof verify === 'object') {
         let data = await Accounts.updateAccountPassword(req.body)
+        // console.log(data ,'loadEmployees' )
+        res.send(data)
+      } else {
+        res.status(403).json({error:"Unauthorized Access"})
+      }
+})
+
+router.post('/resetAccountPassword', async(req, res) => { 
+   let token = req.headers.authorization
+  let verify = verifyCookies(token)
+  if (typeof verify === 'object') {
+        let data = await Accounts.resetAccountPassword(req.body)
+        // console.log(data ,'loadEmployees' )
+        res.send(data)
+      } else {
+        res.status(403).json({error:"Unauthorized Access"})
+      }
+})
+// 
+router.get('/evaluateAccountStatus/:organization_id/:status', async (req, res) => { 
+  const {  organization_id , status } = req.params 
+  let token = req.headers.authorization
+  let verify = verifyCookies(token)
+  if (typeof verify === 'object') {
+        let data = await Accounts.evaluateAccountStatus( organization_id, status)
         // console.log(data ,'loadEmployees' )
         res.send(data)
       } else {

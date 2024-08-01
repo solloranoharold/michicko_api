@@ -33,9 +33,9 @@ router.post('/addUpdateEmployees' , async(req,res)=>{
     let data = await employeeClass.addUpdateEmployees( req.body )
     res.send(data)
 })
-router.get('/employeeTotalCount/:employee_id/:organization_id' , async(req,res )=>{
-    const {employee_id,  organization_id }  = req.params
-    let data = await employeeClass.readEmployeeTotalCount(employee_id, organization_id)
+router.get('/employeeTotalCount/:employee_id/:organization_id/:search' , async(req,res )=>{
+    const {employee_id,  organization_id  , search }  = req.params
+    let data = await employeeClass.readEmployeeTotalCount(employee_id, organization_id , search )
     // console.log(data ,'employeeTotalCount' )
     res.send(data)
 })
@@ -52,6 +52,17 @@ router.get('/loadEmployeesOption/:organization_id' , async(req , res)=>{
     let data = await employeeClass.loadEmployeesOption(  organization_id )
     // console.log(data ,'loadEmployees' )
     res.send(data)
+})
+
+router.get('/searchEmployee/:organization_id/:search' , async(req , res)=>{
+    const {   organization_id , search } = req.params 
+    let data = await employeeClass.searchEmployees(  organization_id , search )
+    // console.log(data ,'loadEmployees' )
+    res.send(data)
+})
+
+router.get('/', (req, res) => { 
+  res.send('sdadasdasdas')
 })
 
 

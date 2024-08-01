@@ -62,6 +62,38 @@ router.get('/readExistingOrganization/:organization', async (req, res) => {
     } 
 })
 
+// 
+router.get('/readOrganizationsAdmin/:employee_id', async (req, res) => { 
+  let token = req.headers.authorization
+    let verify = verifyCookies(token)
+    if (typeof verify === 'object') {
+        let data = await organizationClass.readOrganizationsAdmin(req.params.employee_id)
+        res.status(200).json(data)
+    } else {
+        res.status(403).json({error:"Unauthorized Access"})
+    } 
+})
+router.get('/searchOrganization/:employee_id/:search', async (req, res) => { 
+  let token = req.headers.authorization
+    let verify = verifyCookies(token)
+    if (typeof verify === 'object') {
+        let data = await organizationClass.searchOrganization(req.params.employee_id ,req.params.search)
+        res.status(200).json(data)
+    } else {
+        res.status(403).json({error:"Unauthorized Access"})
+    } 
+})
+router.get('/organizationsTotalCount/:employee_id/:search', async (req, res) => { 
+  let token = req.headers.authorization
+    let verify = verifyCookies(token)
+    if (typeof verify === 'object') {
+        let data = await organizationClass.organizationsTotalCount(req.params.employee_id , req.params.search)
+        res.status(200).json(data)
+    } else {
+        res.status(403).json({error:"Unauthorized Access"})
+    } 
+})
+// organizationsTotalCount
 
 
 

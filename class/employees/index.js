@@ -25,9 +25,11 @@ module.exports = new class Employees {
             })
         })
     }
-    readEmployeeTotalCount(employee_id, organization_id){
+    readEmployeeTotalCount(employee_id, organization_id, search) {
+        console.log(search , 'search')
         return new Promise((resolve , reject)=>{ 
-            let sql=`SELECT COUNT(*) AS TOTAL FROM tbl_employees WHERE organization_id= '${organization_id}' and employee_id != '${employee_id}'` 
+            let sql=`SELECT COUNT(*) AS TOTAL   FROM tbl_employees WHERE organization_id= '${organization_id}'` 
+            if(search!='undefined') sql+=` and  Concat(last_name , ' ', first_name)    LIKE '%${search}%'`
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
                 if(error) reject(error);
@@ -38,11 +40,23 @@ module.exports = new class Employees {
         })
     }
 
+    searchEmployees( organization_id , search ) {
+        return new Promise((resolve , reject ) => { 
+        let sql=`SELECT *  FROM tbl_employees WHERE organization_id= '${organization_id}'` 
+            if(search!=undefined) sql+=` and  Concat(last_name , ' ', first_name)   LIKE '%${search}%'`
+            console.log(sql)
+            connection.query(sql, function (error, results, fields) {
+                if(error) reject(error);
+                if(results)
+                resolve(results)
+            })
+        })
+    }
     loadEmployees( employee_id , organization_id , page , itemsPerPage ){
         
         const offset = (page - 1) * itemsPerPage;
         return new Promise((resolve ,reject)=>{ 
-            let  sql=`SELECT *  FROM tbl_employees WHERE organization_id= '${organization_id}' and employee_id!='${employee_id}'
+            let  sql=`SELECT *  FROM tbl_employees WHERE organization_id= '${organization_id}' 
             ORDER BY employee_id LIMIT ${itemsPerPage} OFFSET ${offset }
             `
 

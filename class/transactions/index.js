@@ -387,6 +387,7 @@ module.exports = new class Transaction {
             let sql = `select  A.* from tbl_transactions A 
             where A.organization_id = '${organization_id}' 
             and A.transaction_created_date between '${date1}' and '${date2}'
+            and A.status =1
             ORDER BY A.transaction_created_date ASC
             `
             console.log(sql)
@@ -406,7 +407,7 @@ module.exports = new class Transaction {
             let sql = `select  A.* from tbl_transactions A 
             where A.organization_id = '${organization_id}' 
             and A.transaction_created_date between '${date1}' and '${date2}'
-            and A.status =1 
+            and A.status = 1 
             ORDER BY A.transaction_created_date ASC
             `
              console.log(sql)
