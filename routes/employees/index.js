@@ -6,6 +6,7 @@ const router = express.Router();
 // const moment = require('moment')
 // const connection = require('./dbConnections')
 const employeeClass = require('../../class/employees') 
+const { verifyCookies }  = require('../verifyToken')
 router.use(cors({
  origin:  process.env.api_host, // Frontend URL
   credentials: true // Allow credentials (cookies)
@@ -29,9 +30,16 @@ router.get('/readExistingEmployee/:last_name/:first_name/:organization_id' ,asyn
 //     res.send('HELLO EMPLOYEES')
 // })
 
-router.post('/addUpdateEmployees' , async(req,res)=>{ 
-    let data = await employeeClass.addUpdateEmployees( req.body )
-    res.send(data)
+router.post('/addUpdateEmployees', async (req, res) => { 
+    let token = req.headers.authorization
+    let verify = verifyCookies(token)
+    if (typeof verify === 'object') {
+      let data = await employeeClass.addUpdateEmployees( req.body )
+      res.send(data)
+    } else {
+        res.status(403).json({error:"Unauthorized Access"})
+    } 
+
 })
 router.get('/employeeTotalCount/:employee_id/:organization_id/:search' , async(req,res )=>{
     const {employee_id,  organization_id  , search }  = req.params
