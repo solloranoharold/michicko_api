@@ -8,7 +8,8 @@ const app = express()
 app.use(cors({
   origin:  process.env.api_host, // Frontend URL
   credentials: true, // Allow credentials (cookies)
-  methods: ["GET", "POST"],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }))
 console.log(process.env.api_host)
 const httpServer = http.createServer({}, app)
