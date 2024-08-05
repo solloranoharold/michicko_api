@@ -7,8 +7,10 @@ const router = express.Router();
 const Clients = require('../../class/clients/')
 const {verifyCookies} = require( '../verifyToken')
 router.use(cors({
-  origin:  process.env.api_host, // Frontend URL
-  credentials: true // Allow credentials (cookies)
+   origin:  process.env.api_host, // Frontend URL
+  credentials: true, // Allow credentials (cookies)
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 })); //Cross-Origin Resource Sharing (CORS)
 router.use(bodyParser.json());
 router.use(
