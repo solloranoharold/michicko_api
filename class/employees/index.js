@@ -14,7 +14,7 @@ module.exports = new class Employees {
             data.employee_id =  pad(id , 8)
            return await insertEmployee(data)
         } else {
-        data.date_created = moment(date.date_created).format('YYYY-MM-DD HH:mm:ss')
+        data.date_created = moment(data.date_created).format('YYYY-MM-DD HH:mm:ss')
         return await updateEmployee(data)
        }
     }
