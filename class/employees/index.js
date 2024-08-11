@@ -1,6 +1,7 @@
 
 const connection = require('../dbConnections')
-const {pad} = require('../generateID')
+const { pad } = require('../generateID')
+const moment = require('moment')
 module.exports = new class Employees {
     constructor(){}
 
@@ -12,7 +13,8 @@ module.exports = new class Employees {
             let id = count[0].TOTAL + 1 
             data.employee_id =  pad(id , 8)
            return await insertEmployee(data)
-       }else{
+        } else {
+        data.date_created = moment(date.date_created).format('YYYY-MM-DD HH:mm:ss')
         return await updateEmployee(data)
        }
     }
