@@ -84,6 +84,7 @@ module.exports = new class Inventory {
               
           } else {
               delete data.updated_by
+              data.date_created = moment(data.date_created).format('YYYY-MM-DD HH:mm:ss')
                 return await updateProduct(data)
             }
     }
