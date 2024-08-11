@@ -1,5 +1,6 @@
 const connection = require('../dbConnections')
-const {pad} = require('../generateID')
+const { pad } = require('../generateID')
+const moment = require('moment')
 module.exports = new class Inventory {
      async productHistoryCreate( data ) {
           return await insertProduct( data , 'tbl_product_history')
@@ -75,8 +76,9 @@ module.exports = new class Inventory {
               return await this.productHistoryCreate( historyObj )
              
           } else {
-         delete data.updated_by
-        return await updateProduct(data)
+              delete data.updated_by
+            data.date_created = moment(data.date_created).format('YYYY-MM-DD HH:mm:ss')
+            return await updateProduct(data)
        }
     }
     loadAllProducts(organization_id) {
