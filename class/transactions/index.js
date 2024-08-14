@@ -30,6 +30,32 @@ module.exports = new class Transaction {
             })
         })
     }
+    loadAllEmployeesCommission( organization_id , date1 , date2 ) {
+        return new Promise(resolve => { 
+            date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
+            date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
+
+            let sql = `
+                SELECT 
+                CONCAT(B.last_name , ' ' ,B.first_name) as 'fullname',
+                B.position , 
+                SUM(A.commission_total_amount) as 'total_commission',
+                SUM(A.tip) as 'total_tip'
+
+                FROM tbl_transactions_commisions A 
+                inner join tbl_employees B on A.employee_id = B.employee_id
+                WHERE A.organization_id = '${organization_id}'
+                and A.date_created BETWEEN '${date1}' and '${date2}'
+                and A.status = 1 
+                GROUP BY A.employee_id
+            `
+            console.log(sql , ' loadAllEmployeesCommission')
+            connection.query(sql, function (error, results, fields) {
+                if (error) throw error;
+                resolve(results)
+            })
+        })
+    }
     loadAllCommissions(organization_id, date1, date2) {
         return new Promise(resolve => { 
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
@@ -43,7 +69,7 @@ module.exports = new class Transaction {
             GROUP BY A.employee_id
             ORDER BY commissions DESC
             `
-            console.log(sql)
+            console.log(sql ,'loadAllCommissions')
             connection.query(sql, function (error, results, fields) {
                 if (error) throw error;
                 resolve(results)

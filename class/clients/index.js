@@ -67,7 +67,7 @@ module.exports = new class Clients {
      searchClient( organization_id , search   ) {
         return new Promise((resolve, reject) => { 
             let sql = `Select A.*,B.* from tbl_clients A INNER JOIN tbl_organizations B ON A.organization_id = B.organization_id
-                WHERE A.last_name LIKE '%${search}%' OR A.first_name LIKE '%${search}% AND A.organization_id ='${organization_id}'
+                WHERE CONCAT(A.last_name, ' ', A.first_name)  LIKE '%${search}%' AND A.organization_id ='${organization_id}'
                 `
             console.log(sql)
             connection.query(sql, function (error, results, fields) {

@@ -72,7 +72,7 @@ module.exports = new class Employees {
     }
      loadEmployeesOption(  organization_id  ){
         return new Promise((resolve ,reject)=>{ 
-            let sql=`SELECT *  FROM tbl_employees WHERE organization_id= '${organization_id}' `
+            let sql=`SELECT *  FROM tbl_employees WHERE organization_id= '${organization_id}' and status = 1`
 
             console.log(sql)
             connection.query(sql, function (error, results, fields) {

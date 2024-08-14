@@ -43,6 +43,17 @@ router.get('/loadAllCommissions/:organization_id/:date1/:date2', async (req, res
         res.status(403).json({error:"Unauthorized Access"})
       }
 })
+router.get('/loadEmployeesCommission/:organization_id/:date1/:date2', async (req, res) => { 
+  const { organization_id , date1 , date2 } = req.params 
+  let token = req.headers.authorization
+  let verify = verifyCookies(token)
+  if (typeof verify === 'object') {
+        let data = await classTransaction.loadAllEmployeesCommission(organization_id , date1 , date2 )
+        res.send(data)
+      } else {
+        res.status(403).json({error:"Unauthorized Access"})
+      }
+})
 // INSERTING TRANSACTION
 router.post('/createTransactions', async (req, res) => { 
   let token = req.headers.authorization
