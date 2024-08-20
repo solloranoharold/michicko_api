@@ -1,68 +1,65 @@
 const connection = require('../dbConnections')
 const { pad } = require('../generateID')
 const moment = require('moment')
-const { openConnection , closeConnection  } = require('../evaluateConnection')
+const {queryData } = require('../evaluateConnection')
 module.exports = new class Inventory {
      async productHistoryCreate( data ) {
           return await insertProduct( data , 'tbl_product_history')
     }
-     readProduct(product, organization_id) {
-         return new Promise((resolve, reject) => { 
-            openConnection()
+     async readProduct(product, organization_id) {
+        // return new Promise((resolve, reject) => { 
             let sql = `select * from tbl_products where product_name = '${product}' and organization_id = '${organization_id}'`
-            connection.query(sql, function (error, results, fields) {
-                if (error) reject(error);
-                closeConnection()
-                resolve(results)
-            })  
-         })
+            return await queryData(sql)
+         //     connection.query(sql, function (error, results, fields) {
+        //         if(error) reject(error);
+        //         resolve(results)
+        //     })  
+        //  })
     }
-    getInventoryTotalCount( organization_id , search ){
-        return new Promise((resolve, reject) => { 
-            openConnection()
+    async getInventoryTotalCount( organization_id , search ){
+        // return new Promise((resolve , reject)=>{ 
             let  sql=`SELECT COUNT(*) AS TOTAL FROM tbl_products WHERE organization_id= '${organization_id}'`
             if (search != 'undefined') sql += ` and product_name LIKE '%${search}%'
             `
-            connection.query(sql, function (error, results, fields) {
-                if (error) reject(error);
-                closeConnection()
-                if(results)
-                resolve(results[0])
-            })
+        let results = await queryData(sql)
+        return await Promise.resolve(results[0])
+        //     connection.query(sql, function (error, results, fields) {
+        //         if(error) reject(error);
+        //         if(results)
+        //         resolve(results[0])
+        //     })
 
-        })
+        // })
     }
-    loadInventory( organization_id , page , itemsPerPage ){
+    async loadInventory( organization_id , page , itemsPerPage ){
         const offset = (page - 1) * itemsPerPage;
-        return new Promise((resolve, reject) => { 
-            openConnection()
+        // return new Promise((resolve ,reject)=>{ 
             let  sql=`SELECT *  FROM tbl_products WHERE organization_id= '${organization_id}' 
             ORDER BY product_id LIMIT ${itemsPerPage} OFFSET ${offset }
             `
 
             console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                if (error) reject(error);
-                closeConnection()
-                if(results)
-                resolve(results)
-            })
-        })
+            return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if(error) reject(error);
+        //         if(results)
+        //         resolve(results)
+        //     })
+        // })
     }
-    searchProduct(organization_id , search   ) {
-        return new Promise((resolve, reject) => { 
-            openConnection()
+    async searchProduct(organization_id , search   ) {
+        // return new Promise((resolve, reject) => { 
             let sql = `select * from tbl_products
             WHERE product_name LIKE '%${search}%'
              AND organization_id ='${organization_id}'`
-            console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                //  console.log(results , 'searchAccount')
-                if (error) reject(error);
-                closeConnection()
-                resolve(results)
-            })
-        })
+        console.log(sql)
+        return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         //  console.log(results , 'searchAccount')
+        //         if(error) reject(error);
+        //         resolve(results)
+        //     })
+        // })
     }
       async addUpdateProduct( data ){
         console.log('/addUpdateEmployees' , data )
@@ -90,30 +87,28 @@ module.exports = new class Inventory {
             return await updateProduct(data)
        }
     }
-    loadAllProducts(organization_id) {
-        return new Promise((resolve, reject) => { 
-            openConnection()
-            let sql = `Select * from tbl_products where organization_id = '${organization_id}'`
-             connection.query(sql, function (error, results, fields) {
-                //  console.log(results , 'searchAccount')
-                 if (error) reject(error);
-                 closeConnection()
-                resolve(results)
-            })
-        })
+    async loadAllProducts(organization_id) {
+        // return new Promise((resolve, reject) => { 
+        let sql = `Select * from tbl_products where organization_id = '${organization_id}'`
+        return await queryData(sql)
+        //      connection.query(sql, function (error, results, fields) {
+        //         //  console.log(results , 'searchAccount')
+        //         if(error) reject(error);
+        //         resolve(results)
+        //     })
+        // })
     }
     
 }
-function getTotalCountForID() {
-    return new Promise(resolve => { 
-         openConnection()
-         let sql = `SELECT count(*) AS TOTAL FROM tbl_products `
-         connection.query(sql, function (error, results, fields) {
-             if (error) throw error
-             closeConnection()
-            resolve(results)
-        })
-     })
+async function getTotalCountForID() {
+    //  return new Promise(resolve => { 
+    let sql = `SELECT count(*) AS TOTAL FROM tbl_products `
+    return await queryData(sql)
+    //      connection.query(sql, function (error, results, fields) {
+    //         if(error) throw error
+    //         resolve(results)
+    //     })
+    //  })
 }
 // function generateID() {
 //     const timestamp = Date.now().toString(36); // Convert timestamp to base-36 string
@@ -121,10 +116,9 @@ function getTotalCountForID() {
 //     console.log(timestamp + randomStr)
 //     return timestamp+randomStr
 // }
-function updateProduct( data ){
+async function updateProduct( data ){
  delete data.method 
-    return new Promise((resolve, reject) => { 
-     openConnection()
+//  return new Promise((resolve , reject )=>{ 
     let sql = `UPDATE tbl_products SET `;
     let updates=[]
     for( const key in data ){
@@ -135,19 +129,18 @@ function updateProduct( data ){
     sql+=updates.join(',')
     sql+= ` WHERE product_id= '${data.product_id}'`
     console.log(sql)
-    connection.query(sql, function (error, results, fields) {
-        if (error) reject(error);
-        closeConnection()
-        if(results)
-        resolve(results)
-    })
- })
+    return await queryData(sql)
+//     connection.query(sql, function (error, results, fields) {
+//         if(error) reject(error);
+//         if(results)
+//         resolve(results)
+//     })
+//  })
 }
 
-function insertProduct( data , table  ){
+async function insertProduct( data , table  ){
     delete data.method
-    return new Promise((resolve, reject) => { 
-        openConnection()
+    // return new Promise((resolve , reject )=>{ 
         const columns = Object.keys(data).join(', ');
         const values = Object.values(data).map(value => connection.escape(value)).join(', ');
         
@@ -157,10 +150,10 @@ function insertProduct( data , table  ){
         values
         (${values})
         `
-        connection.query(sql, function (error, results, fields) {
-            if (error) reject(error);
-            closeConnection()
-            resolve(results)
-        })
-    })
+        return await queryData(sql)
+    //     connection.query(sql, function (error, results, fields) {
+    //         if(error) reject(error);
+    //         resolve(results)
+    //     })
+    // })
 }

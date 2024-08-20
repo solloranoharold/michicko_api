@@ -131,7 +131,8 @@ router.get('/loadNotifications/:organization_id', async (req, res) => {
   let verify = verifyCookies(token)
   if (typeof verify === 'object') {
         let data = await classTransaction.loadNotifications(req.params.organization_id)
-        res.send(data)
+      console.log(data,'loadNotifications' )   
+    res.send(data)
       } else {
         res.status(403).json({error:"Unauthorized Access"})
       }

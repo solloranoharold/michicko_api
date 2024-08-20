@@ -2,7 +2,7 @@
 const connection = require('../dbConnections')
 const { pad } = require('../generateID')
 const moment = require('moment')
-const { openConnection , closeConnection  } = require('../evaluateConnection')
+const {queryData } = require('../evaluateConnection')
 module.exports = new class Employees {
     constructor(){}
 
@@ -19,92 +19,87 @@ module.exports = new class Employees {
         return await updateEmployee(data)
        }
     }
-    readExistingEmployees( last_name , first_name , organization_id   ){
-        return new Promise((resolve, reject) => { 
-            openConnection()
+    async readExistingEmployees( last_name , first_name , organization_id   ){
+        // return new Promise((resolve , reject) =>{ 
             let sql = `select * from tbl_employees where last_name = '${last_name}' and first_name = '${first_name}' and  organization_id ='${organization_id}'`
-            connection.query(sql, function (error, results, fields) {
-                if (error) reject(error);
-                closeConnection()
-                resolve(results)
-            })
-        })
+            return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if(error) reject(error);
+        //         resolve(results)
+        //     })
+        // })
     }
-    readEmployeeTotalCount(employee_id, organization_id, search) {
+   async readEmployeeTotalCount(employee_id, organization_id, search) {
         console.log(search , 'search')
-        return new Promise((resolve, reject) => { 
-            openConnection()
+        // return new Promise((resolve , reject)=>{ 
             let sql=`SELECT COUNT(*) AS TOTAL   FROM tbl_employees WHERE organization_id= '${organization_id}'` 
             if(search!='undefined') sql+=` and  Concat(last_name , ' ', first_name)    LIKE '%${search}%'`
-            console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                if (error) reject(error);
-                closeConnection()
-                if(results)
-                resolve(results[0])
-            })
+       console.log(sql)
+       let results = await queryData(sql)
+       return Promise.resolve(results[0])
+        //     connection.query(sql, function (error, results, fields) {
+        //         if(error) reject(error);
+        //         if(results)
+        //         resolve(results[0])
+        //     })
 
-        })
+        // })
     }
 
-    searchEmployees( organization_id , search ) {
-        return new Promise((resolve, reject) => { 
-            openConnection()
+    async searchEmployees( organization_id , search ) {
+        // return new Promise((resolve , reject ) => { 
         let sql=`SELECT *  FROM tbl_employees WHERE organization_id= '${organization_id}'` 
             if(search!=undefined) sql+=` and  Concat(last_name , ' ', first_name)   LIKE '%${search}%'`
-            console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                if (error) reject(error);
-                closeConnection()
-                if(results)
-                resolve(results)
-            })
-        })
+        console.log(sql)
+        return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if(error) reject(error);
+        //         if(results)
+        //         resolve(results)
+        //     })
+        // })
     }
-    loadEmployees( employee_id , organization_id , page , itemsPerPage ){
+    async loadEmployees( employee_id , organization_id , page , itemsPerPage ){
         
         const offset = (page - 1) * itemsPerPage;
-        return new Promise((resolve, reject) => { 
-            openConnection()
+        // return new Promise((resolve ,reject)=>{ 
             let  sql=`SELECT *  FROM tbl_employees WHERE organization_id= '${organization_id}' 
             ORDER BY employee_id LIMIT ${itemsPerPage} OFFSET ${offset }
             `
 
-            console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                if (error) reject(error);
-                closeConnection()
-                if(results)
-                resolve(results)
-            })
-        })
+        console.log(sql)
+        return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if(error) reject(error);
+        //         if(results)
+        //         resolve(results)
+        //     })
+        // })
     }
-     loadEmployeesOption(  organization_id  ){
-         return new Promise((resolve, reject) => { 
-            openConnection()
+     async loadEmployeesOption(  organization_id  ){
+        // return new Promise((resolve ,reject)=>{ 
             let sql=`SELECT *  FROM tbl_employees WHERE organization_id= '${organization_id}' and status = 1`
 
-            console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                if (error) reject(error);
-                closeConnection()
-                if(results)
-                resolve(results)
-            })
-        })
+         console.log(sql)
+         return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if(error) reject(error);
+        //         if(results)
+        //         resolve(results)
+        //     })
+        // })
     }
     
 }
-function getTotalCountForID(){
-    return new Promise(resolve => { 
-        openConnection()
-        let sql = `SELECT Count(*) AS TOTAL  FROM tbl_employees`
-         connection.query(sql, function (error, results, fields) {
-             if (error) throw error
-             closeConnection()
-                resolve(results)
-            })
-    })
+async function getTotalCountForID(){
+    // return new Promise(resolve => { 
+    let sql = `SELECT Count(*) AS TOTAL  FROM tbl_employees`
+    return await queryData(sql)
+    //      connection.query(sql, function (error, results, fields) {
+    //             if(error) throw error
+    //             resolve(results)
+    //         })
+    // })
 }
 // function  generateID() {
 //     const timestamp = Date.now().toString(36); // Convert timestamp to base-36 string
@@ -112,10 +107,9 @@ function getTotalCountForID(){
 //     console.log(timestamp + randomStr)
 //     return timestamp+randomStr
 // }
-function updateEmployee( data ){
+async function updateEmployee( data ){
  delete data.method 
-    return new Promise((resolve, reject) => { 
-     openConnection()
+//  return new Promise((resolve , reject )=>{ 
     console.log(data , 'dasdasdasda')
     let sql = `UPDATE tbl_employees SET `;
     let updates=[]
@@ -127,19 +121,18 @@ function updateEmployee( data ){
     sql+=updates.join(',')
     sql+= ` WHERE employee_id= '${data.employee_id}'`
     console.log(sql)
-    connection.query(sql, function (error, results, fields) {
-        if (error) reject(error);
-        closeConnection()
-        if(results)
-        resolve(results)
-    })
- })
+    return await queryData(sql)
+//     connection.query(sql, function (error, results, fields) {
+//         if(error) reject(error);
+//         if(results)
+//         resolve(results)
+//     })
+//  })
 }
 
-function insertEmployee( data ){
+async function insertEmployee( data ){
     delete data.method
-    return new Promise((resolve, reject) => { 
-        openConnection()
+    // return new Promise((resolve , reject )=>{ 
         const columns = Object.keys(data).join(', ');
         const values = Object.values(data).map(value => connection.escape(value)).join(', ');
         
@@ -149,10 +142,10 @@ function insertEmployee( data ){
         values
         (${values})
         `
-        connection.query(sql, function (error, results, fields) {
-            if (error) reject(error);
-            closeConnection()
-            resolve(results)
-        })
-    })
+    return await queryData(sql)
+        // connection.query(sql, function (error, results, fields) {
+        //     if(error) reject(error);
+        //     resolve(results)
+        // })
+    // })
 }

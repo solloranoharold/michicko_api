@@ -1,5 +1,5 @@
 const connection = require('../dbConnections')
-const { openConnection , closeConnection  } = require('../evaluateConnection')
+const {queryData } = require('../evaluateConnection')
 module.exports = new class Cashless { 
 
     async addUpdateEPayment( data ){
@@ -13,34 +13,31 @@ module.exports = new class Cashless {
 
     }
 
-     readExistingEPayment(payment_method, organization_id ){
-         return new Promise((resolve, reject) => { 
-            openConnection()
+    async readExistingEPayment(payment_method, organization_id ){
+        // return new Promise((resolve , reject) =>{ 
             let sql = `select * from tbl_e_payment where payment_method = '${payment_method}' and organization_id = '${organization_id}'`
-            connection.query(sql, function (error, results, fields) {
-                if (error) reject(error);
-                closeConnection()
-                resolve(results)
-            })
-        })
+            return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if(error) reject(error);
+        //         resolve(results)
+        //     })
+        // })
     }
-    loadEpayments( organization_id) {
-        return new Promise((resolve, reject) => { 
-            openConnection()
-            let sql = `SELECT * FROM tbl_e_payment WHERE organization_id = '${organization_id}'`
-            connection.query(sql, function (error, results, fields) {
-                if (error) reject(error);
-                closeConnection()
-                resolve(results)
-            })
-        })
+    async loadEpayments( organization_id) {
+        // return new Promise((resolve , reject ) => { 
+        let sql = `SELECT * FROM tbl_e_payment WHERE organization_id = '${organization_id}'`
+        return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if(error) reject(error);
+        //         resolve(results)
+        //     })
+        // })
     }
 
 }
 async function insertEPayment( data ){
     delete data.method
-    return new Promise((resolve, reject) => { 
-        openConnection()
+    // return new Promise((resolve , reject )=>{ 
         const columns = Object.keys(data).join(', ');
         const values = Object.values(data).map(value => connection.escape(value)).join(', ');
         
@@ -50,17 +47,16 @@ async function insertEPayment( data ){
         values
         (${values})
         `
-        connection.query(sql, function (error, results, fields) {
-            if (error) reject(error);
-            closeConnection()
-            resolve(results)
-        })
-    })
+    return await queryData(sql)
+        // connection.query(sql, function (error, results, fields) {
+        //     if(error) reject(error);
+        //     resolve(results)
+        // })
+    // })
 }
 async function updateEPayment( data ){
     delete data.method
-    return new Promise((resolve, reject) => { 
-        openConnection()
+    // return new Promise((resolve , reject )=>{ 
         let sql = `UPDATE tbl_e_payment SET `;
         let updates=[]
         for( const key in data ){
@@ -70,12 +66,12 @@ async function updateEPayment( data ){
         }
         sql+=updates.join(',')
         sql+= ` WHERE payment_id= '${data.payment_id}'`
-        console.log(sql)
-        connection.query(sql, function (error, results, fields) {
-            if (error) reject(error);
-            closeConnection()
-            if(results)
-            resolve(results)
-        })
-    })
+    console.log(sql)
+    return await queryData(sql)
+    //     connection.query(sql, function (error, results, fields) {
+    //         if(error) reject(error);
+    //         if(results)
+    //         resolve(results)
+    //     })
+    // })
 }

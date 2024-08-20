@@ -4,10 +4,10 @@ const inventory = require('../inventory')
 const otc = require('../products')
 const transaction = require('../transactions')
 const moment = require('moment')
-const connection = require('../dbConnections')
+// const connection = require('../dbConnections')
 const ExcelJS = require('exceljs');
+const {queryData } = require('../evaluateConnection')
 
-const { openConnection , closeConnection  } = require('../evaluateConnection')
 module.exports = new class Reports{
     //INVENTORY
     async createServiceExportableExcelFile(sheetName , arrayData ,id , workbook ) {
@@ -81,9 +81,8 @@ module.exports = new class Reports{
         })
         return await Promise.resolve( arrayData)
     }
-    OTCUsedProductHistory(item,organization_id, date1, date2) {
-        return new Promise(resolve => {
-            openConnection()
+    async OTCUsedProductHistory(item,organization_id, date1, date2) {
+        // return new Promise(resolve => {
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
             date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
             let sql = `
@@ -96,19 +95,20 @@ module.exports = new class Reports{
                 and A.date_created between '${date1}' and '${date2}'
                 and A.status = 1 
             `
-             console.log(sql)
-              connection.query(sql, function (error, results, fields) {
-                //  console.log(results , 'searchAccount')
-                  if (error) throw error;
-                  closeConnection()
-                   results.forEach(item => item.quantity = `-${item.less_quantity}pcs`)
-                resolve(results)
-            })
-        })
+        console.log(sql)
+        let results = await queryData(sql)
+        results.forEach(item => item.quantity = `-${item.less_quantity}pcs`)
+        return await Promise.resolve(results)
+        //       connection.query(sql, function (error, results, fields) {
+        //         //  console.log(results , 'searchAccount')
+        //           if (error) throw error;
+        //            results.forEach(item => item.quantity = `-${item.less_quantity}pcs`)
+        //         resolve(results)
+        //     })
+        // })
     }
-     OTCAddedProductHistory(item,organization_id , date1 , date2) {
-         return new Promise(resolve => { 
-            openConnection()
+    async OTCAddedProductHistory(item,organization_id , date1 , date2) {
+        // return new Promise(resolve => { 
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
             date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
             let sql = `
@@ -120,15 +120,17 @@ module.exports = new class Reports{
             and A.product_id='${item.product_id}'
             and A.date_created between '${date1}' and '${date2}'
             `
-             console.log(sql)
-              connection.query(sql, function (error, results, fields) {
-                //  console.log(results , 'searchAccount')
-                  if (error) throw error;
-                  closeConnection()
-                  results.forEach(item => item.quantity = `+${item.added_quantity}pcs`)
-                resolve(results)
-            })
-        })
+        console.log(sql)
+         let results = await queryData(sql)
+        results.forEach(item => item.quantity = `+${item.added_quantity}pcs`)
+        return await Promise.resolve(results)
+        //       connection.query(sql, function (error, results, fields) {
+        //         //  console.log(results , 'searchAccount')
+        //           if (error) throw error;
+        //           results.forEach(item => item.quantity = `+${item.added_quantity}pcs`)
+        //         resolve(results)
+        //     })
+        // })
     }
     async getServicesAddedProductHistory(serviceProducts , data ) {
         let arrayData = []
@@ -158,9 +160,8 @@ module.exports = new class Reports{
     }
     
 
-    servicesAddedProductHistory(item , organization_id , date1 , date2) {
-        return new Promise(resolve => { 
-            openConnection()
+    async servicesAddedProductHistory(item , organization_id , date1 , date2) {
+        // return new Promise(resolve => { 
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
             date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
             let sql = `
@@ -172,19 +173,20 @@ module.exports = new class Reports{
             and A.inventory_id='${item.inventory_id}'
             and A.date_created between '${date1}' and '${date2}'
             `
-            console.log(sql)
-              connection.query(sql, function (error, results, fields) {
-                //  console.log(results , 'searchAccount')
-                  if (error) throw error;
-                  closeConnection()
-                  results.forEach(item => item.quantity = `+${item.added_quantity}pcs`)
-                resolve(results)
-            })
-        })
+        console.log(sql)
+         let results = await queryData(sql)
+        results.forEach(item => item.quantity = `+${item.added_quantity}pcs`)
+        return await Promise.resolve(results)
+        //       connection.query(sql, function (error, results, fields) {
+        //         //  console.log(results , 'searchAccount')
+        //           if (error) throw error;
+        //           results.forEach(item => item.quantity = `+${item.added_quantity}pcs`)
+        //         resolve(results)
+        //     })
+        // })
     }
-    servicesUsedProductHistory(item, organization_id, date1, date2) { 
-        return new Promise(resolve => {
-            openConnection()
+    async servicesUsedProductHistory(item, organization_id, date1, date2) { 
+        // return new Promise(resolve => {
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
             date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
             let sql = `
@@ -197,15 +199,17 @@ module.exports = new class Reports{
                 and A.date_created between '${date1}' and '${date2}' 
                 and A.status =1 
             `
-             console.log(sql)
-              connection.query(sql, function (error, results, fields) {
-                //  console.log(results , 'searchAccount')
-                  if (error) throw error;
-                  closeConnection()
-                   results.forEach(item => item.quantity = `-${item.less_quantity}${item.unit.toLowerCase()}`)
-                resolve(results)
-            })
-        })
+        console.log(sql)
+         let results = await queryData(sql)
+       results.forEach(item => item.quantity = `-${item.less_quantity}${item.unit.toLowerCase()}`)
+        return await Promise.resolve(results)
+        //       connection.query(sql, function (error, results, fields) {
+        //         //  console.log(results , 'searchAccount')
+        //           if (error) throw error;
+        //            results.forEach(item => item.quantity = `-${item.less_quantity}${item.unit.toLowerCase()}`)
+        //         resolve(results)
+        //     })
+        // })
     }
 
     // DAILY SUMMARY

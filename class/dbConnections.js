@@ -7,7 +7,10 @@ var connection = mysql.createConnection({
     user     : user,
     password : password,
     database : database
-  });
+});
+  
+
+
 
   // connection.connect((err) => {
   //   if (err) {
@@ -17,4 +20,6 @@ var connection = mysql.createConnection({
   //   console.log('Connected to MySQL server');
   // });
   
+// module.exports = { createConnection } 
+
 module.exports = connection

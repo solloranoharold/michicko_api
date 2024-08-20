@@ -1,50 +1,28 @@
 
 const connection = require('../dbConnections')
-const { openConnection , closeConnection  } = require('../evaluateConnection')
+const {queryData } = require('../evaluateConnection')
 const moment = require('moment')
 module.exports = new class Organizations { 
     constructor() { }
 
-     searchOrganization(employee_id, search ) {
-         return new Promise((resolve, reject) => { 
-             openConnection()
+     async searchOrganization(employee_id, search ) {
              let sql = `select * from tbl_organizations where organization_name LIKE '%${search}%'`
              if (employee_id != 0) sql += ` and manage_by = '${employee_id}'`
              console.log(sql)
-             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
-                if(results.length)
-                    results.forEach(item => {
-                        item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
-                    });
-                 closeConnection()
-                 resolve(results)
-                 
-            })
-        })
+             return await queryData(sql)
     }
    async organizationsTotalCount(employee_id, search ) {
-       return new Promise((resolve, reject) => { 
-           openConnection()
            let sql = `select Count(*) AS TOTAL from tbl_organizations`
            if (employee_id != 0 || search != 'undefined') sql += ' where'
           if (employee_id != 0 && search != 'undefined') sql+=` manage_by = '${employee_id}' and  organization_name LIKE '%${search}%'`
            else if(employee_id != 0 ) sql+=` manage_by = '${employee_id}'`
            else if (search != 'undefined') sql += `  organization_name LIKE '%${search}%'`
-           console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
-                if (results.length) {
-                       results.forEach(item => {
-                        item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
-                       });
-                    closeConnection()
-                     resolve(results[0])
-                }
-                 
-               
-            })
-       })
+       console.log(sql)
+       let results = await queryData(sql)
+       results.forEach(item => {
+            item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
+        });
+       return await Promise.resolve(results[0])
     }
     async addUpdateOrganizations(data) {
         if (data.method == 0) {
@@ -54,70 +32,29 @@ module.exports = new class Organizations {
         return await updateOrganization(data)
        }
     }
-     readOrganizations() {
-         return new Promise((resolve, reject) => { 
-              openConnection()
+    async readOrganizations() {
              let sql = `SELECT A.*
              FROM tbl_organizations A 
              `
-             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
-                if(results)
-                    results.forEach(item => {
-                        item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
-                    });
-                 closeConnection()
-                resolve(results)
-            })
-        })
+            return await queryData(sql)
     }
-     readOrganizationsPerID( organization_id) {
-         return new Promise((resolve, reject) => { 
-             openConnection()
-             let sql = `SELECT * FROM tbl_organizations where organization_id = '${organization_id}'`
-             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
-                if(results)
-                     resolve(results)
-                 closeConnection()
-            })
-        })
+     async readOrganizationsPerID( organization_id) {
+        //  return new Promise((resolve, reject) => { 
+         let sql = `SELECT * FROM tbl_organizations where organization_id = '${organization_id}'`
+         return await queryData(sql)
     }
-    readExistingOrganization(organization) {
-        return new Promise((resolve, reject) => {
-            openConnection()
+    async readExistingOrganization(organization) {
              let sql = `SELECT * FROM tbl_organizations where organization_name = '${organization}'`
-             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
-                 if (results) {
-                     closeConnection()
-                      resolve(results)
-                 }
-                    
-                    
-                
-            })
-        })
+            return await queryData(sql)    
     }
 
-    readOrganizationsAdmin(employee_id) {
-        return new Promise((resolve, reject) => { 
-            openConnection()
+    async readOrganizationsAdmin(employee_id) {
              let sql = `SELECT A.*,Concat(B.last_name ,' ',B.first_name) as employee_name 
              FROM tbl_organizations A
              LEFT JOIN tbl_employees B ON A.manage_by = B.employee_id
              `
-            if(employee_id!=0) ` where A.manage_by = '${employee_id}'`
-             connection.query(sql, function (error, results, fields) {
-                 if (error) reject(error);
-                 closeConnection()
-                if(results)
-                    results.forEach(item => {
-                        item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
-                    });
-                resolve(results)
-            })
-        })
+            if (employee_id != 0) sql += ` where A.manage_by = '${employee_id}'`
+        return await queryData(sql)
         
     }
 }
@@ -127,10 +64,8 @@ function  generateID() {
     console.log(timestamp + randomStr)
     return timestamp+randomStr
 }
-function updateOrganization( data ){
+async function updateOrganization( data ){
  delete data.method 
-    return new Promise((resolve, reject) => { 
-     openConnection()
     console.log(data , 'dasdasdasda')
     let sql = `UPDATE tbl_organizations SET `;
     let updates=[]
@@ -142,21 +77,11 @@ function updateOrganization( data ){
     sql+=updates.join(',')
     sql+= ` WHERE organization_id= '${data.organization_id}'`
     console.log(sql)
-    connection.query(sql, function (error, results, fields) {
-        if (error) reject(error);
-        closeConnection()
-        if (results) 
-            resolve(results)
-        
-        
-    })
- })
+    return await queryData(sql)
 }
 
-function insertOrganization( data ){
+async function insertOrganization( data ){
     delete data.method
-    return new Promise((resolve, reject) => { 
-        openConnection()
         const columns = Object.keys(data).join(', ');
         const values = Object.values(data).map(value => connection.escape(value)).join(', ');
         
@@ -166,11 +91,6 @@ function insertOrganization( data ){
         values
         (${values})
         `
-        console.log(sql )
-        connection.query(sql, function (error, results, fields) {
-            if (error) reject(error);
-            closeConnection()
-            resolve(results)
-        })
-    })
+        console.log(sql)
+        return await queryData(sql)
 }

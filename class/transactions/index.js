@@ -1,42 +1,40 @@
 const connection = require('../dbConnections')
 const moment = require('moment')
-const { openConnection , closeConnection  } = require('../evaluateConnection')
+const {queryData } = require('../evaluateConnection')
 module.exports = new class Transaction { 
  
-    searchTransaction( organization_id , search   ) {
-        return new Promise((resolve, reject) => { 
-            openConnection()
+   async searchTransaction( organization_id , search   ) {
+        // return new Promise((resolve, reject) => { 
             let sql = `SELECT A.* FROM tbl_transactions A 
             WHERE A.transaction_id LIKE '%${search}%' AND A.organization_id ='${organization_id}'`
-            console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                //  console.log(results , 'searchAccount')
-                if (error) reject(error);
-                closeConnection()
-                resolve(results)
-            })
-        })
+       console.log(sql)
+       return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         //  console.log(results , 'searchAccount')
+        //         if(error) reject(error);
+        //         resolve(results)
+        //     })
+        // })
     }
-    loadTransactionData(organization_id, date1, date2) {
+    async loadTransactionData(organization_id, date1, date2) {
         date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
         date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
-         return new Promise(resolve => {
-            openConnection()
+        //  return new Promise(resolve => {
+            
              let sql = `
              SELECT * FROM tbl_transactions where organization_id = '${organization_id}'
             and transaction_created_date BETWEEN '${date1}' and '${date2}'
              `
-             console.log(sql)
-              connection.query(sql, function (error, results, fields) {
-                  if (error) throw error;
-                  closeConnection()
-                resolve(results)
-            })
-        })
+        console.log(sql)
+        return await queryData(sql)
+        //       connection.query(sql, function (error, results, fields) {
+        //         if (error) throw error;
+        //         resolve(results)
+        //     })
+        // })
     }
-    loadAllEmployeesCommission( organization_id , date1 , date2 ) {
-        return new Promise(resolve => { 
-            openConnection()
+    async loadAllEmployeesCommission( organization_id , date1 , date2 ) {
+        // return new Promise(resolve => { 
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
             date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
 
@@ -54,17 +52,16 @@ module.exports = new class Transaction {
                 and A.status = 1 
                 GROUP BY A.employee_id
             `
-            console.log(sql , ' loadAllEmployeesCommission')
-            connection.query(sql, function (error, results, fields) {
-                if (error) throw error;
-                closeConnection()
-                resolve(results)
-            })
-        })
+        console.log(sql, ' loadAllEmployeesCommission')
+        return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if (error) throw error;
+        //         resolve(results)
+        //     })
+        // })
     }
-    loadAllCommissions(organization_id, date1, date2) {
-        return new Promise(resolve => { 
-            openConnection()
+    async loadAllCommissions(organization_id, date1, date2) {
+        // return new Promise(resolve => { 
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
             date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
             let sql = `
@@ -76,13 +73,13 @@ module.exports = new class Transaction {
             GROUP BY A.employee_id
             ORDER BY commissions DESC
             `
-            console.log(sql ,'loadAllCommissions')
-            connection.query(sql, function (error, results, fields) {
-                if (error) throw error;
-                closeConnection()
-                resolve(results)
-            })
-        })
+        console.log(sql, 'loadAllCommissions')
+        return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if (error) throw error;
+        //         resolve(results)
+        //     })
+        // })
     }
     
     async createTransactions(data) {     
@@ -185,9 +182,10 @@ module.exports = new class Transaction {
     async updateNotification( data ) {
         return await updateTransaction(data ,'notification_id' , 'tbl_notifications')
     }
-     loadNotifications(organization_id) {
-         return new Promise(resolve => { 
-             openConnection()
+    async loadNotifications(organization_id) {
+        //  return new Promise(resolve => { 
+             
+            
              let sql = `select A.*,B.* from tbl_notifications A 
               inner join tbl_organizations B on A.organization_id = B.organization_id
               where A.created_date BETWEEN '${moment().format('YYYY-MM-01 00:00:00')}' and '${moment().format('YYYY-MM-31 23:59:59')}'
@@ -195,18 +193,20 @@ module.exports = new class Transaction {
              if(organization_id!=0) sql+=` and A.organization_id = '${organization_id}'`
              sql += ` ORDER BY  A.created_date DESC`
              console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                if (error) throw error;
-                console.log(results)
-                closeConnection()
-                resolve(results)
-            })
-        })
+            return await queryData(sql)
+
+        
+
+            // connection.query(sql, function (error, results, fields) {
+            //     if (error) throw error;
+            //     console.log(results)
+            //     resolve(results)
+            // })
+        // })
     }
 
-    loadCommissions( organization_id,employee_id , date1 , date2) {
-        return new Promise(resolve => { 
-            openConnection()
+    async loadCommissions( organization_id,employee_id , date1 , date2) {
+        // return new Promise(resolve => { 
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
             date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
             let sql = `select * from tbl_transactions_commisions where organization_id = '${organization_id}'
@@ -214,17 +214,17 @@ module.exports = new class Transaction {
             and date_created between '${date1}' and '${date2}'
              and status = 1 
             `
-            console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                if (error) throw error;
-                console.log(results)
-                closeConnection()
-                results.forEach(item => {
-                    item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
-                });
-                resolve(results)
-            })
-       })
+        console.log(sql)
+        return await queryData(sql)
+    //         connection.query(sql, function (error, results, fields) {
+    //             if (error) throw error;
+    //             console.log(results)
+    //             results.forEach(item => {
+    //                 item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
+    //             });
+    //             resolve(results)
+    //         })
+    //    })
     }
     async getClientTransactions(organization_id, client_id, date1, date2) {
        let transactions = await this.loadClientTransactions(organization_id, client_id, date1, date2)
@@ -232,9 +232,8 @@ module.exports = new class Transaction {
        let products = await this.loadClientProducts(organization_id, client_id, date1, date2)
        return await transactions.concat(services).concat(products)
     }
-     loadClientServices( organization_id,client_id , date1 , date2) {
-         return new Promise(resolve => { 
-                openConnection()
+     async loadClientServices( organization_id,client_id , date1 , date2) {
+        // return new Promise(resolve => { 
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
             date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
             let sql = `select A.*,B.* from tbl_transactions_services A 
@@ -244,21 +243,20 @@ module.exports = new class Transaction {
             and A.created_date between '${date1}' and '${date2}'
              and A.status = 1 
             `
-            console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                if (error) throw error;
-                console.log(results)
-                closeConnection()
-                results.forEach(item => {
-                    item.created_date = moment(item.created_date).format('YYYY-MM-DD HH:mm:ss A')
-                });
-                resolve(results)
-            })
-       })
+         console.log(sql)
+         return await queryData(sql)
+    //         connection.query(sql, function (error, results, fields) {
+    //             if (error) throw error;
+    //             console.log(results)
+    //             results.forEach(item => {
+    //                 item.created_date = moment(item.created_date).format('YYYY-MM-DD HH:mm:ss A')
+    //             });
+    //             resolve(results)
+    //         })
+    //    })
     }
-     loadClientProducts( organization_id,client_id , date1 , date2) {
-         return new Promise(resolve => { 
-            openConnection()
+    async loadClientProducts( organization_id,client_id , date1 , date2) {
+        // return new Promise(resolve => { 
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
             date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
             let sql = `select A.*,B.* from tbl_transactions_otc_product A 
@@ -268,21 +266,20 @@ module.exports = new class Transaction {
             and A.date_created between '${date1}' and '${date2}'
              and A.status = 1 
             `
-            console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                if (error) throw error;
-                console.log(results)
-                closeConnection()
-                results.forEach(item => {
-                    item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
-                });
-                resolve(results)
-            })
-        }) 
+        console.log(sql)
+        return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if (error) throw error;
+        //         console.log(results)
+        //         results.forEach(item => {
+        //             item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
+        //         });
+        //         resolve(results)
+        //     })
+        // }) 
     }
-    loadClientTransactions( organization_id,client_id , date1 , date2) {
-        return new Promise(resolve => { 
-            openConnection()
+    async loadClientTransactions( organization_id,client_id , date1 , date2) {
+        // return new Promise(resolve => { 
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
             date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
             let sql = `select  A.* from tbl_transactions A
@@ -291,36 +288,34 @@ module.exports = new class Transaction {
             and A.transaction_created_date between '${date1}' and '${date2}'
             and A.status = 1 
             `
-            console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                if (error) throw error;
-                console.log(results)
-                closeConnection()
-                results.forEach(item => {
-                    item.transaction_created_date = moment(item.transaction_created_date).format('YYYY-MM-DD HH:mm:ss A')
-                });
-                resolve(results)
-            })
-       })
+        console.log(sql)
+        return await queryData(sql)
+    //         connection.query(sql, function (error, results, fields) {
+    //             if (error) throw error;
+    //             console.log(results)
+    //             results.forEach(item => {
+    //                 item.transaction_created_date = moment(item.transaction_created_date).format('YYYY-MM-DD HH:mm:ss A')
+    //             });
+    //             resolve(results)
+    //         })
+    //    })
     }
-    loadTransactionCount(organization_id , search) { 
-        return new Promise(resolve => { 
-            openConnection()
+    async loadTransactionCount(organization_id , search) { 
+        // return new Promise(resolve => { 
             let sql = `select Count(*) as TOTAL from tbl_transactions where organization_id = '${organization_id}'`
             if (search != 'undefined') sql += ` and transaction_id LIKE '%${search}%'`
             console.log(sql)
-            connection.query(sql, function (error, results, fields) {
-                if (error) throw error;
-                closeConnection()
-                if(results)
-                resolve(results[0])
-            })
-        })
+            return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if (error) throw error;
+        //         if(results)
+        //         resolve(results[0])
+        //     })
+        // })
     }
-    loadAllTransactionsPerPage(organization_id, page, itemsPerPage) {
+    async loadAllTransactionsPerPage(organization_id, page, itemsPerPage) {
         const offset = (page - 1) * itemsPerPage;
-        return new Promise((resolve) => {
-            openConnection()
+        // return new Promise((resolve) => {
             let sql = `select  A.*,B.*,C.last_name AS 'emp_last' ,C.first_name AS 'emp_first' from tbl_transactions A 
             inner join tbl_clients B on A.client_id = B.client_id
             left join tbl_employees C on A.updated_by= C.employee_id
@@ -329,21 +324,20 @@ module.exports = new class Transaction {
             LIMIT ${itemsPerPage} OFFSET ${offset}
             
             `
-            console.log(sql)
-             connection.query(sql, function (error, results, fields) {
-                 if (error) throw error;
-                 closeConnection()
-                results.forEach(item => {
-                    item.transaction_created_date = moment(item.transaction_created_date).format('YYYY-MM-DD HH:mm:ss A')
-                });
-                resolve(results)
-            })
-        })
+        console.log(sql)
+        return await queryData(sql)
+        //      connection.query(sql, function (error, results, fields) {
+        //         if (error) throw error;
+        //         results.forEach(item => {
+        //             item.transaction_created_date = moment(item.transaction_created_date).format('YYYY-MM-DD HH:mm:ss A')
+        //         });
+        //         resolve(results)
+        //     })
+        // })
     }
-    loadAllTransactionsPerDate(organization_id, date1, date2) {
+    async loadAllTransactionsPerDate(organization_id, date1, date2) {
         console.log(organization_id, date1, date2)
-        return new Promise((resolve) => {
-            openConnection()
+        // return new Promise((resolve) => {
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
             date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
             let sql = `select  A.*,B.organization_name,C.last_name , C.first_name from tbl_transactions A 
@@ -353,16 +347,16 @@ module.exports = new class Transaction {
             and A.transaction_created_date between '${date1}' and '${date2}'
             ORDER BY A.transaction_created_date ASC
             `
-            console.log(sql)
-             connection.query(sql, function (error, results, fields) {
-                 if (error) throw error;
-                 closeConnection()
-                results.forEach(item => {
-                    item.transaction_created_date = moment(item.transaction_created_date).format('YYYY-MM-DD HH:mm:ss A')
-                });
-                resolve(results)
-            })
-        })
+        console.log(sql)
+        return await queryData(sql)
+        //      connection.query(sql, function (error, results, fields) {
+        //          if (error) throw error;
+        //         results.forEach(item => {
+        //             item.transaction_created_date = moment(item.transaction_created_date).format('YYYY-MM-DD HH:mm:ss A')
+        //         });
+        //         resolve(results)
+        //     })
+        // })
     }
  
 
@@ -388,59 +382,54 @@ module.exports = new class Transaction {
         return await data
         
     }
-    loadAllServicesProductsTransaction(transaction_id) {
-        return new Promise(resolve => { 
-            openConnection()
+    async loadAllServicesProductsTransaction(transaction_id) {
+        // return new Promise(resolve => { 
             let sql = `SELECT * FROM tbl_transactions_services_product where transaction_id = '${transaction_id}'`
-             connection.query(sql, function (error, results, fields) {
-                 if (error) throw error;
-                 closeConnection()
-                resolve(results)
-            })
-        })
+        return await queryData(sql)
+        //      connection.query(sql, function (error, results, fields) {
+        //         if (error) throw error;
+        //         resolve(results)
+        //     })
+        // })
     }
-    loadAllOTCProductsTransaction(transaction_id) {
-        return new Promise(resolve => { 
-            openConnection()
+    async loadAllOTCProductsTransaction(transaction_id) {
+        // return new Promise(resolve => { 
             let sql = `SELECT * FROM tbl_transactions_otc_product where transaction_id = '${transaction_id}'`
-            console.log(sql )
-            connection.query(sql, function (error, results, fields) {
-                if (error) throw error;
-                closeConnection()
-                resolve(results)
-            })
-        })
+        console.log(sql)
+        return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if (error) throw error;
+        //         resolve(results)
+        //     })
+        // })
     }
-    loadAllServicesTransaction(transaction_id) {
-        return new Promise(resolve => { 
-            openConnection()
+    async loadAllServicesTransaction(transaction_id) {
+        // return new Promise(resolve => { 
             let sql = `SELECT * FROM tbl_transactions_services where transaction_id = '${transaction_id}'`
-            console.log(sql )
-            connection.query(sql, function (error, results, fields) {
-                if (error) throw error;
-                closeConnection()
-                resolve(results)
-            })
-        })
+        console.log(sql)
+        return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if (error) throw error;
+        //         resolve(results)
+        //     })
+        // })
     }
-    loadAllCommissionsTransaction(transaction_id) {
-        return new Promise(resolve => { 
-            openConnection()
+    async loadAllCommissionsTransaction(transaction_id) {
+        // return new Promise(resolve => { 
             let sql = `SELECT * FROM tbl_transactions_commisions where transaction_id = '${transaction_id}'`
-            console.log(sql ) 
-            connection.query(sql, function (error, results, fields) {
-                if (error) throw error;
-                closeConnection()
-                resolve(results)
-            })
-        })
+        console.log(sql) 
+        return await queryData(sql)
+        //     connection.query(sql, function (error, results, fields) {
+        //         if (error) throw error;
+        //         resolve(results)
+        //     })
+        // })
     }
 
     //  DASHBOARD DATA 
-      loadAllTransactionsPerDateDashboard(organization_id, date1, date2) {
+      async loadAllTransactionsPerDateDashboard(organization_id, date1, date2) {
         console.log(organization_id, date1, date2)
-          return new Promise((resolve) => {
-            openConnection()
+        // return new Promise((resolve) => {
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
             date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
             let sql = `select  A.* from tbl_transactions A 
@@ -449,20 +438,19 @@ module.exports = new class Transaction {
             and A.status =1
             ORDER BY A.transaction_created_date ASC
             `
-            console.log(sql)
-             connection.query(sql, function (error, results, fields) {
-                 if (error) throw error;
-                 closeConnection()
-                results.forEach(item => {
-                    item.transaction_created_date = moment(item.transaction_created_date).format('YYYY-MM-DD HH:mm:ss A')
-                });
-                resolve(results)
-            })
-        })
+          console.log(sql)
+          return await queryData(sql)
+        //      connection.query(sql, function (error, results, fields) {
+        //          if (error) throw error;
+        //         results.forEach(item => {
+        //             item.transaction_created_date = moment(item.transaction_created_date).format('YYYY-MM-DD HH:mm:ss A')
+        //         });
+        //         resolve(results)
+        //     })
+        // })
     }
-     loadAllYearlyTransactions(organization_id) {
-         return new Promise(resolve => { 
-            openConnection()
+    async loadAllYearlyTransactions(organization_id) {
+        // return new Promise(resolve => { 
            let date1 = moment().startOf('year').format('YYYY-MM-DD 00:00:00')
             let date2 = moment().endOf('year').format('YYYY-MM-DD 23:59:59')
             let sql = `select  A.* from tbl_transactions A 
@@ -471,20 +459,19 @@ module.exports = new class Transaction {
             and A.status = 1 
             ORDER BY A.transaction_created_date ASC
             `
-             console.log(sql)
-             connection.query(sql, function (error, results, fields) {
-                 if (error) throw error;
-                 closeConnection()
-                results.forEach(item => {
-                    item.transaction_created_date = moment(item.transaction_created_date).format('YYYY-MM-DD HH:mm:ss A')
-                });
-                resolve(results)
-            })
-        })
+        console.log(sql)
+        return await queryData(sql)
+        //      connection.query(sql, function (error, results, fields) {
+        //          if (error) throw error;
+        //         results.forEach(item => {
+        //             item.transaction_created_date = moment(item.transaction_created_date).format('YYYY-MM-DD HH:mm:ss A')
+        //         });
+        //         resolve(results)
+        //     })
+        // })
     }
-    loadAllServicesSales( organization_id) {
-        return new Promise(resolve => { 
-            openConnection()
+    async loadAllServicesSales( organization_id) {
+        // return new Promise(resolve => { 
             let date1 = moment().startOf('year').format('YYYY-MM-DD 00:00:00')
             let date2 = moment().endOf('year').format('YYYY-MM-DD 23:59:59')
             let sql =
@@ -506,21 +493,20 @@ module.exports = new class Transaction {
            
             
             `
-            console.log(sql)
-             connection.query(sql, function (error, results, fields) {
-                 if (error) throw error;
-                 closeConnection()
-                results.forEach(item => {
-                    item.created_date = moment(item.created_date).format('YYYY-MM-DD')
-                });
-                resolve(results)
-            })
-        })
+        console.log(sql)
+        return await queryData(sql)
+        //      connection.query(sql, function (error, results, fields) {
+        //          if (error) throw error;
+        //         results.forEach(item => {
+        //             item.created_date = moment(item.created_date).format('YYYY-MM-DD')
+        //         });
+        //         resolve(results)
+        //     })
+        // })
     }
-    loadAllServicesSalesPerPage(organization_id ,page , itemsPerPage) {
+    async loadAllServicesSalesPerPage(organization_id ,page , itemsPerPage) {
         const offset = (page - 1) * itemsPerPage;
-        return new Promise(resolve => { 
-            openConnection()
+        // return new Promise(resolve => { 
             let date1 = moment().startOf('year').format('YYYY-MM-DD 00:00:00')
             let date2 = moment().endOf('year').format('YYYY-MM-DD 23:59:59')
             let sql =
@@ -542,20 +528,19 @@ module.exports = new class Transaction {
             LIMIT ${itemsPerPage} OFFSET ${offset}
             
             `
-            console.log(sql)
-             connection.query(sql, function (error, results, fields) {
-                 if (error) throw error;
-                 closeConnection()
-                results.forEach(item => {
-                    item.created_date = moment(item.created_date).format('YYYY-MM-DD')
-                });
-                resolve(results)
-            })
-        })
+        console.log(sql)
+        return await queryData(sql)
+        //      connection.query(sql, function (error, results, fields) {
+        //          if (error) throw error;
+        //         results.forEach(item => {
+        //             item.created_date = moment(item.created_date).format('YYYY-MM-DD')
+        //         });
+        //         resolve(results)
+        //     })
+        // })
     }
-    loadAllOTCSales( organization_id) {
-        return new Promise(resolve => { 
-            openConnection()
+    async loadAllOTCSales( organization_id) {
+        // return new Promise(resolve => { 
           let date1 = moment().startOf('year').format('YYYY-MM-DD 00:00:00')
             let date2 = moment().endOf('year').format('YYYY-MM-DD 23:59:59')
             let sql =
@@ -570,16 +555,16 @@ module.exports = new class Transaction {
             and A.organization_id = '${organization_id}' 
             and A.status = 1 
         `
-            console.log(sql)
-             connection.query(sql, function (error, results, fields) {
-                 if (error) throw error;
-                 closeConnection()
-                results.forEach(item => {
-                    item.created_date = moment(item.created_date).format('YYYY-MM-DD')
-                });
-                resolve(results)
-            })
-        })
+        console.log(sql)
+        return await queryData(sql)
+        //      connection.query(sql, function (error, results, fields) {
+        //          if (error) throw error;
+        //         results.forEach(item => {
+        //             item.created_date = moment(item.created_date).format('YYYY-MM-DD')
+        //         });
+        //         resolve(results)
+        //     })
+        // })
     }
 
 }
@@ -589,36 +574,33 @@ function generateID() {
     console.log(timestamp + randomStr)
     return timestamp+randomStr
 }
-function readAffectedServicesProduct(data) {
+async function readAffectedServicesProduct(data) {
     const { inventory_id , organization_id } = data 
-    return new Promise(resolve => { 
-        openConnection()
+    // return new Promise(resolve => { 
         let sql = `Select * from tbl_inventory where inventory_id ='${inventory_id}' and organization_id = '${organization_id}'`
-         connection.query(sql, function (error, results, fields) {
-             if (error) throw error;
-             console.log(results)
-             closeConnection()
-            resolve(results)
-        })
-    })
+        return await queryData(sql)
+    //      connection.query(sql, function (error, results, fields) {
+    //          if (error) throw error;
+    //          console.log(results )
+    //         resolve(results)
+    //     })
+    // })
 }
-function readAffectedOTCProduct(data) {
+async function readAffectedOTCProduct(data) {
     const { product_id , organization_id } = data 
-    return new Promise(resolve => { 
-        openConnection()
+    // return new Promise(resolve => { 
         let sql = `Select * from tbl_products where product_id ='${product_id}' and organization_id = '${organization_id}'`
-         connection.query(sql, function (error, results, fields) {
-             if (error) throw error;
-             console.log(results)
-             closeConnection()
-            resolve(results)
-        })
-    })
+        return await queryData(sql)
+    //      connection.query(sql, function (error, results, fields) {
+    //          if (error) throw error;
+    //          console.log(results )
+    //         resolve(results)
+    //     })
+    // })
 }
- function insertTransactions( data , table ){
+ async function insertTransactions( data , table ){
     delete data.method
-     return new Promise((resolve, reject) => { 
-        openConnection()
+    // return new Promise((resolve , reject )=>{ 
         const columns = Object.keys(data).join(', ');
         const values = Object.values(data).map(value => connection.escape(value)).join(', ');
         
@@ -628,18 +610,17 @@ function readAffectedOTCProduct(data) {
         values
         (${values})
         `
-        console.log(sql)
-        connection.query(sql, function (error, results, fields) {
-            if (error) reject(error);
-            closeConnection()
-            resolve(results)
-        })
-    })
+     console.log(sql)
+     return await queryData(sql)
+    //     connection.query(sql, function (error, results, fields) {
+    //         if(error) reject(error);
+    //         resolve(results)
+    //     })
+    // })
 }
 
-function updateTransaction( data  , key , table   ){
-    return new Promise((resolve, reject) => { 
-     openConnection()
+async function updateTransaction( data  , key , table   ){
+//  return new Promise((resolve , reject )=>{ 
     let sql = `UPDATE ${table} SET `;
     let updates=[]
     for( const key in data ){
@@ -650,11 +631,11 @@ function updateTransaction( data  , key , table   ){
     sql+=updates.join(',')
     sql+= ` WHERE ${key}= '${data[key]}'`
     console.log(sql)
-    connection.query(sql, function (error, results, fields) {
-        if (error) reject(error);
-        closeConnection()
-        if(results)
-        resolve(results)
-    })
- })
+    return await queryData(sql)
+//     connection.query(sql, function (error, results, fields) {
+//         if(error) reject(error);
+//         if(results)
+//         resolve(results)
+//     })
+//  })
 }
