@@ -1,5 +1,6 @@
 const connection = require('../dbConnections')
-const {pad} = require('../generateID')
+const { pad } = require('../generateID')
+const { openConnection , closeConnection  } = require('../evaluateConnection')
 module.exports = new class Clients { 
     constructor(){}
 
@@ -19,31 +20,37 @@ module.exports = new class Clients {
     }
     loadAllClients(organization_id) {
         return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `SELECT * FROM tbl_clients where organization_id ='${organization_id}'`
             console.log(sql)
              connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                 if (error) reject(error);
+                 closeConnection()
                 resolve(results)
             })
         })
     }
     readExistingClients(last_name , first_name , organization_id ){
-        return new Promise((resolve , reject) =>{ 
+        return new Promise((resolve, reject) => { 
+              openConnection()
             let sql = `select * from tbl_clients where last_name = '${last_name}' and first_name = '${first_name}' and organization_id = '${organization_id}'`
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                 closeConnection()
                 resolve(results)
             })
         })
     }
     getClientTotalCount( organization_id , search ) {
-        return new Promise((resolve , reject) => { 
+        return new Promise((resolve, reject) => { 
+               openConnection()
             let sql = `SELECT count(*) AS TOTAL FROM tbl_clients A where organization_id = '${organization_id}'`
             if(search!='undefined') sql+=` and A.last_name LIKE '%${search}%'
                 OR A.first_name LIKE '%${search}%'`
              console.log(sql)
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 if(results)
                 resolve(results[0])
             })
@@ -52,27 +59,31 @@ module.exports = new class Clients {
     loadClients( organization_id, page, itemsPerPage) {
         const offset = (page - 1) * itemsPerPage;
         return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `Select A.*,B.* from tbl_clients A INNER JOIN tbl_organizations B ON A.organization_id = B.organization_id where A.organization_id = '${organization_id}'`
             sql += ` ORDER BY A.client_id LIMIT ${itemsPerPage} OFFSET ${offset}`
             
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
                 console.log(results , 'loadClients')
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 if(results)
                 resolve(results)
             })
         })  
     }
      searchClient( organization_id , search   ) {
-        return new Promise((resolve, reject) => { 
+         return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `Select A.*,B.* from tbl_clients A INNER JOIN tbl_organizations B ON A.organization_id = B.organization_id
                 WHERE CONCAT(A.last_name, ' ', A.first_name)  LIKE '%${search}%' AND A.organization_id ='${organization_id}'
                 `
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
                  console.log(results , 'searchAccount')
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 resolve(results)
             })
         })
@@ -80,9 +91,11 @@ module.exports = new class Clients {
 }
  function getTotalCountForID() {
      return new Promise(resolve => { 
+         openConnection()
          let sql = `SELECT count(*) AS TOTAL FROM tbl_clients `
          connection.query(sql, function (error, results, fields) {
-            if(error) throw error
+             if (error) throw error
+             closeConnection()
             resolve(results)
         })
      })
@@ -90,7 +103,8 @@ module.exports = new class Clients {
 
 async function insertClient( data ){
     delete data.method
-    return new Promise((resolve , reject )=>{ 
+    return new Promise((resolve, reject) => { 
+        openConnection()
         const columns = Object.keys(data).join(', ');
         const values = Object.values(data).map(value => connection.escape(value)).join(', ');
         
@@ -101,7 +115,8 @@ async function insertClient( data ){
         (${values})
         `
         connection.query(sql, function (error, results, fields) {
-            if(error) reject(error);
+            if (error) reject(error);
+            closeConnection()
             resolve(results)
         })
     })
@@ -114,7 +129,8 @@ async function insertClient( data ){
 // }
 async function updateClient( data ){
     delete data.method
-    return new Promise((resolve , reject )=>{ 
+    return new Promise((resolve, reject) => { 
+        openConnection()
         let sql = `UPDATE tbl_clients SET `;
         let updates=[]
         for( const key in data ){
@@ -126,7 +142,8 @@ async function updateClient( data ){
         sql+= ` WHERE client_id= '${data.client_id}'`
         console.log(sql)
         connection.query(sql, function (error, results, fields) {
-            if(error) reject(error);
+            if (error) reject(error);
+            closeConnection()
             if(results)
             resolve(results)
         })

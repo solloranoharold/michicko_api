@@ -1,26 +1,31 @@
 
 const connection = require('../dbConnections')
+const { openConnection , closeConnection  } = require('../evaluateConnection')
 const moment = require('moment')
 module.exports = new class Organizations { 
     constructor() { }
 
      searchOrganization(employee_id, search ) {
-         return new Promise((resolve,reject) => { 
+         return new Promise((resolve, reject) => { 
+             openConnection()
              let sql = `select * from tbl_organizations where organization_name LIKE '%${search}%'`
              if (employee_id != 0) sql += ` and manage_by = '${employee_id}'`
              console.log(sql)
              connection.query(sql, function (error, results, fields) {
                 if(error) reject(error);
-                if(results)
+                if(results.length)
                     results.forEach(item => {
                         item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
                     });
-                resolve(results)
+                 closeConnection()
+                 resolve(results)
+                 
             })
         })
     }
    async organizationsTotalCount(employee_id, search ) {
        return new Promise((resolve, reject) => { 
+           openConnection()
            let sql = `select Count(*) AS TOTAL from tbl_organizations`
            if (employee_id != 0 || search != 'undefined') sql += ' where'
           if (employee_id != 0 && search != 'undefined') sql+=` manage_by = '${employee_id}' and  organization_name LIKE '%${search}%'`
@@ -29,11 +34,15 @@ module.exports = new class Organizations {
            console.log(sql)
             connection.query(sql, function (error, results, fields) {
                 if(error) reject(error);
-                if(results)
-                    results.forEach(item => {
+                if (results.length) {
+                       results.forEach(item => {
                         item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
-                    });
-                resolve(results[0])
+                       });
+                    closeConnection()
+                     resolve(results[0])
+                }
+                 
+               
             })
        })
     }
@@ -46,7 +55,8 @@ module.exports = new class Organizations {
        }
     }
      readOrganizations() {
-         return new Promise((resolve , reject) => { 
+         return new Promise((resolve, reject) => { 
+              openConnection()
              let sql = `SELECT A.*
              FROM tbl_organizations A 
              `
@@ -56,40 +66,51 @@ module.exports = new class Organizations {
                     results.forEach(item => {
                         item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
                     });
+                 closeConnection()
                 resolve(results)
             })
         })
     }
      readOrganizationsPerID( organization_id) {
-         return new Promise((resolve , reject) => { 
+         return new Promise((resolve, reject) => { 
+             openConnection()
              let sql = `SELECT * FROM tbl_organizations where organization_id = '${organization_id}'`
              connection.query(sql, function (error, results, fields) {
                 if(error) reject(error);
                 if(results)
-                resolve(results)
+                     resolve(results)
+                 closeConnection()
             })
         })
     }
     readExistingOrganization(organization) {
         return new Promise((resolve, reject) => {
+            openConnection()
              let sql = `SELECT * FROM tbl_organizations where organization_name = '${organization}'`
              connection.query(sql, function (error, results, fields) {
                 if(error) reject(error);
-                if(results)
-                resolve(results)
+                 if (results) {
+                     closeConnection()
+                      resolve(results)
+                 }
+                    
+                    
+                
             })
         })
     }
 
     readOrganizationsAdmin(employee_id) {
-        return new Promise((resolve , reject ) => { 
+        return new Promise((resolve, reject) => { 
+            openConnection()
              let sql = `SELECT A.*,Concat(B.last_name ,' ',B.first_name) as employee_name 
              FROM tbl_organizations A
              LEFT JOIN tbl_employees B ON A.manage_by = B.employee_id
              `
             if(employee_id!=0) ` where A.manage_by = '${employee_id}'`
              connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                 if (error) reject(error);
+                 closeConnection()
                 if(results)
                     results.forEach(item => {
                         item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
@@ -108,7 +129,8 @@ function  generateID() {
 }
 function updateOrganization( data ){
  delete data.method 
- return new Promise((resolve , reject )=>{ 
+    return new Promise((resolve, reject) => { 
+     openConnection()
     console.log(data , 'dasdasdasda')
     let sql = `UPDATE tbl_organizations SET `;
     let updates=[]
@@ -121,16 +143,20 @@ function updateOrganization( data ){
     sql+= ` WHERE organization_id= '${data.organization_id}'`
     console.log(sql)
     connection.query(sql, function (error, results, fields) {
-        if(error) reject(error);
-        if(results)
-        resolve(results)
+        if (error) reject(error);
+        closeConnection()
+        if (results) 
+            resolve(results)
+        
+        
     })
  })
 }
 
 function insertOrganization( data ){
     delete data.method
-    return new Promise((resolve , reject )=>{ 
+    return new Promise((resolve, reject) => { 
+        openConnection()
         const columns = Object.keys(data).join(', ');
         const values = Object.values(data).map(value => connection.escape(value)).join(', ');
         
@@ -142,7 +168,8 @@ function insertOrganization( data ){
         `
         console.log(sql )
         connection.query(sql, function (error, results, fields) {
-            if(error) reject(error);
+            if (error) reject(error);
+            closeConnection()
             resolve(results)
         })
     })

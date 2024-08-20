@@ -3,7 +3,8 @@ require('dotenv').config()
 const moment = require('moment')
 const passwordSalt = process.env.passwordSalt
 const connection = require('../dbConnections')
-const {pad } = require('../generateID')
+const { pad } = require('../generateID')
+const { openConnection , closeConnection  } = require('../evaluateConnection')
 module.exports = new class Accounts { 
     constructor(){}
 
@@ -20,15 +21,18 @@ module.exports = new class Accounts {
 
     getAccountsPerOrg(  organization_id  ) {
         return new Promise(resolve => {
+            openConnection()
             let sql = `SELECT * FROM tbl_accounts where organization_id = '${organization_id}'`
              connection.query(sql, function (error, results, fields) {
-                 console.log(results , 'searchAccount')
+                 console.log(results, 'searchAccount')
+                 closeConnection()
                 resolve(results)
             })
         })
     }
      loginUsers( username , password ){
-        return new Promise((resolve , reject)=>{ 
+         return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `SELECT A.*,B.*,C.*,D.*,B.position AS account_position FROM tbl_accounts A 
             INNER JOIN tbl_positions B ON B.position_id = A.position_id 
             INNER JOIN tbl_employees C ON A.employee_id = C.employee_id
@@ -38,6 +42,7 @@ module.exports = new class Accounts {
             connection.query(sql, function (error, results, fields) {
                 console.log(results)
                 if (error) reject(error);
+                closeConnection()
                 if (results.length == 0) {
                     resolve([])
                 } else {
@@ -55,6 +60,7 @@ module.exports = new class Accounts {
     }
     searchAccount(employee_id , organization_id , search   ) {
         return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `SELECT A.*,B.*,C.*,B.position AS "account_position"  FROM tbl_accounts A INNER JOIN tbl_positions B ON A.position_id = B.position_id INNER JOIN tbl_employees C ON C.employee_id = A.employee_id  
                 WHERE
                 A.username LIKE '%${search}%'
@@ -66,16 +72,19 @@ module.exports = new class Accounts {
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
                  console.log(results , 'searchAccount')
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 resolve(results)
             })
         })
     }
      readExistingAccount( username ) {
          return new Promise((resolve, reject) => { 
+             openConnection()
              let sql = `SELECT * FROM tbl_accounts where username = '${username}'`
              connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                 if (error) reject(error);
+                 closeConnection()
                 if(results)
                 resolve(results)
             })
@@ -116,7 +125,8 @@ module.exports = new class Accounts {
         return await updateAccount(data)
     }
     accountTotalCount(employee_id, organization_id, search) {
-         return new Promise((resolve, reject) => { 
+        return new Promise((resolve, reject) => { 
+             openConnection()
             // SELECT A.*,B.*,C.*,B.position AS "account_position"  
             //FROM tbl_accounts A INNER JOIN tbl_positions B ON A.position_id = B.position_id INNER JOIN tbl_employees C ON C.employee_id = A.employee_id
              let sql = `SELECT COUNT(*) AS TOTAL FROM tbl_accounts A  
@@ -129,7 +139,8 @@ module.exports = new class Accounts {
                 OR C.first_name LIKE '%${search}%'`
              console.log(sql)
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 if(results)
                 resolve(results[0])
             })
@@ -139,7 +150,8 @@ module.exports = new class Accounts {
   loadAccounts( employee_id , organization_id , page , itemsPerPage ){
         
         const offset = (page - 1) * itemsPerPage;
-        return new Promise((resolve ,reject)=>{ 
+      return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `SELECT A.*,B.*,C.*,B.position AS "account_position"  FROM tbl_accounts A INNER JOIN tbl_positions B ON A.position_id = B.position_id INNER JOIN tbl_employees C ON C.employee_id = A.employee_id
             WHERE A.organization_id= '${organization_id}' AND A.employee_id !='${employee_id}'
             ORDER BY account_id LIMIT ${itemsPerPage} OFFSET ${offset}`
@@ -148,8 +160,9 @@ module.exports = new class Accounts {
 
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
-                if(results)
+                if (error) reject(error);
+                closeConnection()
+                if (results)
                 resolve(results)
             })
         })
@@ -158,9 +171,11 @@ module.exports = new class Accounts {
 } 
  function getTotalCountForID() {
      return new Promise(resolve => { 
+         openConnection()
          let sql = `SELECT count(*) AS TOTAL FROM tbl_accounts `
          connection.query(sql, function (error, results, fields) {
-            if(error) throw error
+             if (error) throw error
+             closeConnection()
             resolve(results)
         })
      })
@@ -184,7 +199,8 @@ function decryptPassword(password) {
 function updateAccount( data ){
  delete data.method 
  return new Promise((resolve , reject )=>{ 
-    console.log(data , 'dasdasdasda')
+     console.log(data, 'dasdasdasda')
+     openConnection()
     let sql = `UPDATE tbl_accounts SET `;
     let updates=[]
     for( const key in data ){
@@ -196,7 +212,8 @@ function updateAccount( data ){
     sql+= ` WHERE account_id= '${data.account_id}'`
     console.log(sql)
     connection.query(sql, function (error, results, fields) {
-        if(error) reject(error);
+        if (error) reject(error);
+        closeConnection()
         if(results)
         resolve(results)
     })
@@ -205,7 +222,8 @@ function updateAccount( data ){
 
 function insertAccount( data ){
     delete data.method
-    return new Promise((resolve , reject )=>{ 
+    return new Promise((resolve, reject) => { 
+        openConnection()
         const columns = Object.keys(data).join(', ');
         const values = Object.values(data).map(value => connection.escape(value)).join(', ');
         
@@ -217,7 +235,8 @@ function insertAccount( data ){
         `
         console.log(sql )
         connection.query(sql, function (error, results, fields) {
-            if(error) reject(error);
+            if (error) reject(error);
+            closeConnection()
             resolve(results)
         })
     })

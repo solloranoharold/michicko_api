@@ -1,6 +1,7 @@
 const connection = require('../dbConnections')
 const moment = require('moment')
-const {pad} = require('../generateID')
+const { pad } = require('../generateID')
+const { openConnection , closeConnection  } = require('../evaluateConnection')
 module.exports = new class Inventory {
     
     async productHistoryCreate( data ) {
@@ -9,21 +10,25 @@ module.exports = new class Inventory {
 
 
      readProduct(product, organization_id) {
-        return new Promise((resolve, reject) => { 
+         return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `select * from tbl_inventory where product_name = '${product}' and organization_id = '${organization_id}'`
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 resolve(results)
             })  
          })
     }
     getInventoryTotalCount( organization_id , search ){
-        return new Promise((resolve , reject)=>{ 
+        return new Promise((resolve, reject) => { 
+            openConnection()
             let  sql=`SELECT COUNT(*) AS TOTAL FROM tbl_inventory WHERE organization_id= '${organization_id}'`
             if (search != 'undefined') sql += ` and product_name LIKE '%${search}%'
             `
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 if(results)
                 resolve(results[0])
             })
@@ -32,14 +37,16 @@ module.exports = new class Inventory {
     }
     loadInventory( organization_id , page , itemsPerPage ){
         const offset = (page - 1) * itemsPerPage;
-        return new Promise((resolve ,reject)=>{ 
+        return new Promise((resolve, reject) => { 
+            openConnection()
             let  sql=`SELECT *  FROM tbl_inventory WHERE organization_id= '${organization_id}' 
             ORDER BY inventory_id LIMIT ${itemsPerPage} OFFSET ${offset }
             `
 
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 if (results)
                 results.forEach(item => {
                     item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss A')
@@ -51,13 +58,15 @@ module.exports = new class Inventory {
     }
     searchProduct(organization_id , search   ) {
         return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `select * from tbl_inventory
             WHERE product_name LIKE '%${search}%'
              AND organization_id ='${organization_id}'`
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
                 //  console.log(results , 'searchAccount')
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 resolve(results)
             })
         })
@@ -90,12 +99,14 @@ module.exports = new class Inventory {
     }
     async loadAllInvetory(organization_id) {
         return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `select * from tbl_inventory
             WHERE organization_id ='${organization_id}'`
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
                 //  console.log(results , 'searchAccount')
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 resolve(results)
             })
         })
@@ -103,10 +114,12 @@ module.exports = new class Inventory {
     
 }
 function getTotalCountForID() {
-     return new Promise(resolve => { 
+    return new Promise(resolve => { 
+         openConnection()
          let sql = `SELECT count(*) AS TOTAL FROM tbl_inventory `
          connection.query(sql, function (error, results, fields) {
-            if(error) throw error
+             if (error) throw error
+             closeConnection()
             resolve(results)
         })
      })
@@ -119,7 +132,8 @@ function getTotalCountForID() {
 // }
 function updateProduct( data ){
  delete data.method 
- return new Promise((resolve , reject )=>{ 
+    return new Promise((resolve, reject) => { 
+     openConnection()
     let sql = `UPDATE tbl_inventory SET `;
     let updates=[]
     for( const key in data ){
@@ -131,7 +145,8 @@ function updateProduct( data ){
     sql+= ` WHERE inventory_id= '${data.inventory_id}'`
     console.log(sql)
     connection.query(sql, function (error, results, fields) {
-        if(error) reject(error);
+        if (error) reject(error);
+        closeConnection()
         if(results)
         resolve(results)
     })
@@ -140,7 +155,8 @@ function updateProduct( data ){
 
 function insertProduct( data , table  ){
     delete data.method
-    return new Promise((resolve , reject )=>{ 
+    return new Promise((resolve, reject) => { 
+        openConnection()
         const columns = Object.keys(data).join(', ');
         const values = Object.values(data).map(value => connection.escape(value)).join(', ');
         
@@ -151,7 +167,8 @@ function insertProduct( data , table  ){
         (${values})
         `
         connection.query(sql, function (error, results, fields) {
-            if(error) reject(error);
+            if (error) reject(error);
+            closeConnection()
             resolve(results)
         })
     })

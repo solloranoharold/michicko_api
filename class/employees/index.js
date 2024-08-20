@@ -2,6 +2,7 @@
 const connection = require('../dbConnections')
 const { pad } = require('../generateID')
 const moment = require('moment')
+const { openConnection , closeConnection  } = require('../evaluateConnection')
 module.exports = new class Employees {
     constructor(){}
 
@@ -19,22 +20,26 @@ module.exports = new class Employees {
        }
     }
     readExistingEmployees( last_name , first_name , organization_id   ){
-        return new Promise((resolve , reject) =>{ 
+        return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `select * from tbl_employees where last_name = '${last_name}' and first_name = '${first_name}' and  organization_id ='${organization_id}'`
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 resolve(results)
             })
         })
     }
     readEmployeeTotalCount(employee_id, organization_id, search) {
         console.log(search , 'search')
-        return new Promise((resolve , reject)=>{ 
+        return new Promise((resolve, reject) => { 
+            openConnection()
             let sql=`SELECT COUNT(*) AS TOTAL   FROM tbl_employees WHERE organization_id= '${organization_id}'` 
             if(search!='undefined') sql+=` and  Concat(last_name , ' ', first_name)    LIKE '%${search}%'`
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 if(results)
                 resolve(results[0])
             })
@@ -43,12 +48,14 @@ module.exports = new class Employees {
     }
 
     searchEmployees( organization_id , search ) {
-        return new Promise((resolve , reject ) => { 
+        return new Promise((resolve, reject) => { 
+            openConnection()
         let sql=`SELECT *  FROM tbl_employees WHERE organization_id= '${organization_id}'` 
             if(search!=undefined) sql+=` and  Concat(last_name , ' ', first_name)   LIKE '%${search}%'`
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 if(results)
                 resolve(results)
             })
@@ -57,26 +64,30 @@ module.exports = new class Employees {
     loadEmployees( employee_id , organization_id , page , itemsPerPage ){
         
         const offset = (page - 1) * itemsPerPage;
-        return new Promise((resolve ,reject)=>{ 
+        return new Promise((resolve, reject) => { 
+            openConnection()
             let  sql=`SELECT *  FROM tbl_employees WHERE organization_id= '${organization_id}' 
             ORDER BY employee_id LIMIT ${itemsPerPage} OFFSET ${offset }
             `
 
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 if(results)
                 resolve(results)
             })
         })
     }
      loadEmployeesOption(  organization_id  ){
-        return new Promise((resolve ,reject)=>{ 
+         return new Promise((resolve, reject) => { 
+            openConnection()
             let sql=`SELECT *  FROM tbl_employees WHERE organization_id= '${organization_id}' and status = 1`
 
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 if(results)
                 resolve(results)
             })
@@ -86,9 +97,11 @@ module.exports = new class Employees {
 }
 function getTotalCountForID(){
     return new Promise(resolve => { 
+        openConnection()
         let sql = `SELECT Count(*) AS TOTAL  FROM tbl_employees`
          connection.query(sql, function (error, results, fields) {
-                if(error) throw error
+             if (error) throw error
+             closeConnection()
                 resolve(results)
             })
     })
@@ -101,7 +114,8 @@ function getTotalCountForID(){
 // }
 function updateEmployee( data ){
  delete data.method 
- return new Promise((resolve , reject )=>{ 
+    return new Promise((resolve, reject) => { 
+     openConnection()
     console.log(data , 'dasdasdasda')
     let sql = `UPDATE tbl_employees SET `;
     let updates=[]
@@ -114,7 +128,8 @@ function updateEmployee( data ){
     sql+= ` WHERE employee_id= '${data.employee_id}'`
     console.log(sql)
     connection.query(sql, function (error, results, fields) {
-        if(error) reject(error);
+        if (error) reject(error);
+        closeConnection()
         if(results)
         resolve(results)
     })
@@ -123,7 +138,8 @@ function updateEmployee( data ){
 
 function insertEmployee( data ){
     delete data.method
-    return new Promise((resolve , reject )=>{ 
+    return new Promise((resolve, reject) => { 
+        openConnection()
         const columns = Object.keys(data).join(', ');
         const values = Object.values(data).map(value => connection.escape(value)).join(', ');
         
@@ -134,7 +150,8 @@ function insertEmployee( data ){
         (${values})
         `
         connection.query(sql, function (error, results, fields) {
-            if(error) reject(error);
+            if (error) reject(error);
+            closeConnection()
             resolve(results)
         })
     })

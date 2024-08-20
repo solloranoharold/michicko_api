@@ -1,4 +1,5 @@
 const connection = require('../dbConnections')
+const { openConnection , closeConnection  } = require('../evaluateConnection')
 module.exports = new class Cashless { 
 
     async addUpdateEPayment( data ){
@@ -13,19 +14,23 @@ module.exports = new class Cashless {
     }
 
      readExistingEPayment(payment_method, organization_id ){
-        return new Promise((resolve , reject) =>{ 
+         return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `select * from tbl_e_payment where payment_method = '${payment_method}' and organization_id = '${organization_id}'`
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 resolve(results)
             })
         })
     }
     loadEpayments( organization_id) {
-        return new Promise((resolve , reject ) => { 
+        return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `SELECT * FROM tbl_e_payment WHERE organization_id = '${organization_id}'`
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 resolve(results)
             })
         })
@@ -34,7 +39,8 @@ module.exports = new class Cashless {
 }
 async function insertEPayment( data ){
     delete data.method
-    return new Promise((resolve , reject )=>{ 
+    return new Promise((resolve, reject) => { 
+        openConnection()
         const columns = Object.keys(data).join(', ');
         const values = Object.values(data).map(value => connection.escape(value)).join(', ');
         
@@ -45,14 +51,16 @@ async function insertEPayment( data ){
         (${values})
         `
         connection.query(sql, function (error, results, fields) {
-            if(error) reject(error);
+            if (error) reject(error);
+            closeConnection()
             resolve(results)
         })
     })
 }
 async function updateEPayment( data ){
     delete data.method
-    return new Promise((resolve , reject )=>{ 
+    return new Promise((resolve, reject) => { 
+        openConnection()
         let sql = `UPDATE tbl_e_payment SET `;
         let updates=[]
         for( const key in data ){
@@ -64,7 +72,8 @@ async function updateEPayment( data ){
         sql+= ` WHERE payment_id= '${data.payment_id}'`
         console.log(sql)
         connection.query(sql, function (error, results, fields) {
-            if(error) reject(error);
+            if (error) reject(error);
+            closeConnection()
             if(results)
             resolve(results)
         })

@@ -1,11 +1,14 @@
 const connection = require('../dbConnections')
+const { openConnection , closeConnection  } = require('../evaluateConnection')
 module.exports = new class Services { 
 
     readServices(service, organization_id) {
         return new Promise((resolve, reject) => { 
+            openConnection()
               let sql = `select * from tbl_services where service_name = '${service}' and organization_id = '${organization_id}'`
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 resolve(results)
             })  
          })
@@ -24,12 +27,14 @@ module.exports = new class Services {
 
     }
     getServicesTotalCount( organization_id , search ) {
-        return new Promise((resolve , reject) => { 
+        return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `SELECT count(*) AS TOTAL FROM tbl_services A where organization_id = '${organization_id}'`
             if(search!='undefined') sql+=` and A.service_name LIKE '%${search}%'`
              console.log(sql)
             connection.query(sql, function (error, results, fields) {
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 if(results)
                 resolve(results[0])
             })
@@ -38,6 +43,7 @@ module.exports = new class Services {
     loadServices( organization_id, page, itemsPerPage) {
         const offset = (page - 1) * itemsPerPage;
         return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `SELECT A.*,B.*,C.* FROM tbl_services A 
             INNER JOIN tbl_category B ON A.category_id = B.category_id
             INNER JOIN tbl_organizations C on A.organization_id = C.organization_id
@@ -48,14 +54,16 @@ module.exports = new class Services {
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
                 // console.log(results , 'loadClients')
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 if(results)
                 resolve(results)
             })
         })  
     }
      searchServices( organization_id , search   ) {
-        return new Promise((resolve, reject) => { 
+         return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `SELECT A.*,B.*,C.* FROM tbl_services A 
             INNER JOIN tbl_category B ON A.category_id = B.category_id
             INNER JOIN tbl_organizations C on A.organization_id = C.organization_id
@@ -63,17 +71,20 @@ module.exports = new class Services {
             console.log(sql)
             connection.query(sql, function (error, results, fields) {
                 //  console.log(results , 'searchAccount')
-                if(error) reject(error);
+                if (error) reject(error);
+                closeConnection()
                 resolve(results)
             })
         })
     }
     loadAllServices(organization_id) {
         return new Promise((resolve, reject) => { 
+            openConnection()
             let sql = `SELECT * FROM tbl_services where organization_id = '${organization_id}' and status = 1`
              connection.query(sql, function (error, results, fields) {
                 //  console.log(results , 'searchAccount')
-                if(error) reject(error);
+                 if (error) reject(error);
+                 closeConnection()
                 resolve(results)
             })
        })
@@ -82,7 +93,8 @@ module.exports = new class Services {
 
 async function insertService( data ){
     delete data.method
-    return new Promise((resolve , reject )=>{ 
+    return new Promise((resolve, reject) => { 
+        openConnection()
         const columns = Object.keys(data).join(', ');
         const values = Object.values(data).map(value => connection.escape(value)).join(', ');
         
@@ -93,7 +105,8 @@ async function insertService( data ){
         (${values})
         `
         connection.query(sql, function (error, results, fields) {
-            if(error) reject(error);
+            if (error) reject(error);
+            closeConnection()
             resolve(results)
         })
     })
@@ -106,7 +119,8 @@ function  generateID() {
 }
 async function updateService( data ){
     delete data.method
-    return new Promise((resolve , reject )=>{ 
+    return new Promise((resolve, reject) => { 
+        openConnection()
         let sql = `UPDATE tbl_services SET `;
         let updates=[]
         for( const key in data ){
@@ -118,7 +132,8 @@ async function updateService( data ){
         sql+= ` WHERE service_id= '${data.service_id}'`
         console.log(sql)
         connection.query(sql, function (error, results, fields) {
-            if(error) reject(error);
+            if (error) reject(error);
+            closeConnection()
             if(results)
             resolve(results)
         })
