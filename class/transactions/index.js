@@ -424,7 +424,7 @@ module.exports = new class Transaction {
             AND A.transaction_id = '${transaction_id}'
             AND A.date_created between '${date1}' and '${date2}'
             AND A.commission_type = '${commission_type}'
-            GROUP BY B.position ASC
+            GROUP BY B.position 
         `
         console.log(sql)
         return  await queryData(sql)
