@@ -101,6 +101,9 @@ module.exports = new class Transaction {
     async createTransactionsCommissions(data) {
          return await this.evaluateTransactions( data , 'tbl_transactions_commisions')
     }
+    async createTransactionsOtherFees(data) {
+        return await this.evaluateTransactions( data , 'tbl_transactions_other_fees')
+    }
     async  evaluateTransactions(data, table) {
         for (let x = 0; x < data.length; x++){
             await insertTransactions(data[x] , table )
@@ -304,8 +307,9 @@ module.exports = new class Transaction {
         // return new Promise(resolve => { 
             let sql = `select Count(*) as TOTAL from tbl_transactions where organization_id = '${organization_id}'`
             if (search != 'undefined') sql += ` and transaction_id LIKE '%${search}%'`
-            console.log(sql)
-            return await queryData(sql)
+        console.log(sql)
+        let results = await queryData(sql)
+            return await Promise.resolve(results[0])
         //     connection.query(sql, function (error, results, fields) {
         //         if (error) throw error;
         //         if(results)
@@ -340,9 +344,11 @@ module.exports = new class Transaction {
         // return new Promise((resolve) => {
             date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
             date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
-            let sql = `select  A.*,B.organization_name,C.last_name , C.first_name from tbl_transactions A 
+        let sql = `select  A.*,B.organization_name,C.last_name , C.first_name , D.description 
+            from tbl_transactions A 
             inner join tbl_organizations B on A.organization_id = B.organization_id
             inner join tbl_employees C on A.updated_by = C.employee_id
+            inner join tbl_discounts D on A.discount_id = D.discount_id
             where A.organization_id = '${organization_id}' 
             and A.transaction_created_date between '${date1}' and '${date2}'
             ORDER BY A.transaction_created_date ASC
@@ -357,6 +363,82 @@ module.exports = new class Transaction {
         //         resolve(results)
         //     })
         // })
+    }
+
+    async getAllClientTransactionServices(organization_id, date1, date2) {
+        date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
+        date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
+        let sql = `
+            Select A.transaction_created_date ,
+            Count(B.service_id) as no_of_works,
+            CONCAT(C.last_name , ' ' , C.first_name) as client_name,
+            SUM(B.price) as original_total_amount,
+            A.discount,
+            A.transaction_id
+
+            from tbl_transactions A
+            INNER JOIN tbl_transactions_services B on A.transaction_id = B.transaction_id
+            INNER JOIN tbl_clients C on B.client_id = C.client_id
+            WHERE A.organization_id= '${organization_id}' 
+            AND A.transaction_created_date between '${date1}' and '${date2}'
+            GROUP BY transaction_id ASC 
+            ORDER BY A.transaction_created_date ASC
+        `
+        console.log(sql)
+         return  await queryData(sql)
+    }
+    async getAllClientTransactionOTC(organization_id, date1, date2) {
+        date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
+        date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
+        let sql = `
+            Select A.transaction_created_date ,  
+            CONCAT(C.last_name , ' ' , C.first_name) as client_name,
+            Count(B.product_id) as no_of_products, 
+            SUM(B.product_total_amount) as original_total_amount,
+            A.discount,
+            A.transaction_id
+            from tbl_transactions A 
+            INNER JOIN tbl_transactions_otc_product B on A.transaction_id = B.transaction_id
+            INNER JOIN tbl_clients C on B.client_id = C.client_id
+            WHERE A.organization_id= '${organization_id}' 
+            AND A.transaction_created_date between '${date1}' and '${date2}'
+            GROUP BY A.transaction_id ASC
+            ORDER BY A.transaction_created_date ASC
+        `
+         console.log(sql)
+         return  await queryData(sql)
+
+    }
+    async getAllEmployeeCommissions(transaction_id, organization_id, date1, date2 ,commission_type) {
+        date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
+        date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
+        let sql = `
+            select SUM(A.commission_total_amount) as commission_total_amount ,
+            CONCAT(B.last_name , ' ', B.first_name) as employee_name , 
+            B.position,
+            B.commissions, 
+            A.transaction_id
+            from tbl_transactions_commisions A 
+            INNER JOIN tbl_employees B  on A.employee_id = B.employee_id
+            WHERE  A.organization_id = '${organization_id}' 
+            AND A.transaction_id = '${transaction_id}'
+            AND A.date_created between '${date1}' and '${date2}'
+            AND A.commission_type = '${commission_type}'
+            GROUP BY B.position ASC
+        `
+        console.log(sql)
+        return  await queryData(sql)
+    }
+    async getAllOtherFees(transaction_id, organization_id, date1, date2) {
+        date1 = moment(date1).format('YYYY-MM-DD 00:00:00')
+        date2 = moment(date2).format('YYYY-MM-DD 23:59:59')
+        let sql = `Select * from tbl_transactions_other_fees  
+        where transaction_id ='${transaction_id}' 
+        and organization_id = '${organization_id}'
+        and date_created between '${date1}' and '${date2}'
+        `
+         console.log(sql)
+        return  await queryData(sql)
     }
  
 

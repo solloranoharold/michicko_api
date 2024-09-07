@@ -213,48 +213,135 @@ module.exports = new class Reports{
     }
 
     // DAILY SUMMARY
-    async createTransactionExportableExcelFile(sheetName , arrayData  , workbook ) {
-        const worksheet = workbook.addWorksheet(sheetName);
-        worksheet.columns = [
-            { header: 'Date', key: 'transaction_created_date', width: 20 },
-            { header: '# of Work', key: "no_of_service", width: 15,style: { alignment: { horizontal: 'center' } } },
-            { header: 'Total Sales', key: 'transaction_total_amount', width: 10, style: { alignment: { horizontal: 'center' } } },
-            { header: 'Service Total Sales', key: 'service_total_amount', width: 20, style: { alignment: { horizontal: 'center' } } },
-            { header: 'Total Net Sales', key: 'transaction_total_net_sales', width: 25, style: { alignment: { horizontal: 'center' } } },
-            { header: 'Service Net Sales', key: 'transaction_net_sales_services', width: 20, style: { alignment: { horizontal: 'center' } } },
-            { header: 'OTC Net Sales', key: 'transaction_net_sales_otc', width: 20, style: { alignment: { horizontal: 'center' } } },
-            { header: 'OTC Total Sales', key: 'otc_total_amount', width: 10, style: { alignment: { horizontal: 'center' } } },
-            { header: 'Service Commissions %', key: 'total_commissions_service', width: 15, style: { alignment: { horizontal: 'center' } } },
-            { header: 'OTC Commissions %', key: 'total_commissions_otc', width: 15,style: { alignment: { horizontal: 'center' } } },
-            { header: 'Branch', key: 'organization_name', width: 35 },
-            { header: 'Updated By', key: 'fullname', width: 25 },
-           
-        ];
-        for (let x = 0; x < arrayData.length; x++){
-            let item = arrayData[x]
-            item.fullname = `${item.last_name} ${item.first_name}`
-             worksheet.addRow(item);
+    async createTransactionExportableExcelFile(workbook , services_sales_tracking=[],otc_sales_tracking=[] ) {
+       
+        if (services_sales_tracking.length) {
+            const worksheet1 = workbook.addWorksheet('Service Sales Tracking');
+            worksheet1.columns = [
+                { header: 'Date', key: 'transaction_created_date', width: 15, style: { alignment: { horizontal: 'center' } } },
+                { header: 'Client', key: 'client_name', width: 30, style: { alignment: { horizontal: 'left' } } },
+                { header: '# of Works', key: "no_of_works", width: 15, style: { alignment: { horizontal: 'center' } } },
+                { header: 'Junior', key: 'Junior', width: 25, style: { alignment: { horizontal: 'left' } } },
+                { header: 'Senior', key: 'Senior', width: 25, style: { alignment: { horizontal: 'left' } } },
+                { header: 'Original Total Sales', key: 'original_total_amount', width: 30, style: { alignment: { horizontal: 'left' } } },
+                { header: 'Discount', key: 'discount', width: 30, style: { alignment: { horizontal: 'left' } } },
+                { header: 'Total Sales', key: 'total_sales', width: 30, style: { alignment: { horizontal: 'center' } } },
+                { header: 'Sr. Commission', key: 'Sr. Service Commission', width: 30, style: { alignment: { horizontal: 'left' } } },
+                { header: 'Jr. Commission', key: 'Jr. Service Commission', width: 30, style: { alignment: { horizontal: 'left' } } },
+                { header: 'Total Net', key: 'total_net_sales', width: 30, style: { alignment: { horizontal: 'left' } } },
+            ];
+            for (let x = 0; x < services_sales_tracking.length; x++){
+                let item = services_sales_tracking[x]
+                let percent = item.discount ? (item.discount/100) : 0
+                let total_discount = percent!=0 ?  item.original_total_amount * percent : 0
+                let total_sales = Number(item.original_total_amount) - Number(total_discount)
+                item.discount = item.discount ? `${item.discount}%` : 0
+                item.total_sales = `₱${parseFloat(total_sales).toFixed(2)}`
+
+                
+                item.original_total_amount = `₱${parseFloat(item.original_total_amount).toFixed(2)}`
+                let jr_commission = item['Jr. Service Commission'] ? parseFloat(item['Jr. Service Commission']).toFixed(2) : 0
+                let sr_commission =  item['Sr. Service Commission'] ?parseFloat(item['Sr. Service Commission']).toFixed(2) : 0
+                item['Jr. Service Commission'] = item['Jr. Service Commission'] ? `₱${parseFloat(item['Jr. Service Commission']).toFixed(2)}` : 0
+                item['Sr. Service Commission'] = item['Sr. Service Commission'] ? `₱${parseFloat(item['Sr. Service Commission']).toFixed(2)}` : 0
+                let total_commission = Number(jr_commission) + Number(sr_commission)
+                let total_net_sales=  Number(total_sales) - Number(total_commission)
+                item.total_net_sales = `₱${parseFloat(total_net_sales).toFixed(2)}`
+                worksheet1.addRow(item);
+            }
         }
+        if (otc_sales_tracking.length) {
+             const worksheet2 = workbook.addWorksheet('OTC Sales Tracking');
+            worksheet2.columns = [
+                { header: 'Date', key: 'transaction_created_date', width: 15, style: { alignment: { horizontal: 'center' } } },
+                 { header: 'Client', key: 'client_name', width: 30, style: { alignment: { horizontal: 'left' } } },
+                { header: '# of Products', key: "no_of_products", width: 15, style: { alignment: { horizontal: 'center' } } },
+                { header: 'Senior', key: 'Senior', width: 25, style: { alignment: { horizontal: 'left' } } },
+                { header: 'Original Total Sales', key: 'original_total_amount', width: 30, style: { alignment: { horizontal: 'left' } } },
+                { header: 'Discount', key: 'discount', width: 30, style: { alignment: { horizontal: 'left' } } },
+                { header: 'Total Sales', key: 'total_sales', width: 30, style: { alignment: { horizontal: 'center' } } },
+                { header: 'Sr. Commission', key: 'Sr. Service Commission', width: 30, style: { alignment: { horizontal: 'left' } } },
+                { header: 'Total Net', key: 'total_net_sales', width: 30, style: { alignment: { horizontal: 'left' } } },
+            ];
+             for (let x = 0; x < otc_sales_tracking.length; x++){
+                let item = otc_sales_tracking[x]
+                let percent = item.discount ? (item.discount/100) : 0
+                let total_discount = percent!=0 ?  item.original_total_amount * percent : 0
+                let total_sales = Number(item.original_total_amount) - Number(total_discount)
+                item.discount = item.discount ? `${item.discount}%` : 0
+                item.total_sales = `₱${parseFloat(total_sales).toFixed(2)}`
+
+                
+                item.original_total_amount = `₱${parseFloat(item.original_total_amount).toFixed(2)}`
+                let jr_commission = item['Jr. Service Commission'] ? parseFloat(item['Jr. Service Commission']).toFixed(2) : 0
+                let sr_commission =  item['Sr. Service Commission'] ?parseFloat(item['Sr. Service Commission']).toFixed(2) : 0
+                item['Jr. Service Commission'] = item['Jr. Service Commission'] ? `₱${parseFloat(item['Jr. Service Commission']).toFixed(2)}` : 0
+                item['Sr. Service Commission'] = item['Sr. Service Commission'] ? `₱${parseFloat(item['Sr. Service Commission']).toFixed(2)}` : 0
+                let total_commission = Number(jr_commission) + Number(sr_commission)
+                let total_net_sales=  Number(total_sales) - Number(total_commission)
+                item.total_net_sales = `₱${parseFloat(total_net_sales).toFixed(2)}`
+                worksheet2.addRow(item);
+            }
+        }
+        // if (otherFees.length > 0) {
+            
+        //    const worksheet1 = workbook.addWorksheet('Other Fees');
+        //     worksheet1.columns = [
+        //         { header: 'Date', key: 'date_created', width: 15,style: { alignment: { horizontal: 'center' } } },
+        //         { header: 'Transaction ID', key: "transaction_id", width: 20,style: { alignment: { horizontal: 'center' } } },
+        //         { header: 'Description', key: 'description', width: 30, style: { alignment: { horizontal: 'left' } } },
+        //         { header: 'Amount', key: 'amount', width: 15, style: { alignment: { horizontal: 'left' } } },
+        //         { header: 'Operation', key: 'status', width: 15, style: { alignment: { horizontal: 'left' } } },
+        //     ];
+        //     for (let x = 0; x < otherFees.length; x++){
+        //         let item = otherFees[x]
+        //         item.status = item.operation == '+' ? 'add' : 'less'
+        //         item.amount = `₱${parseFloat(item.amount).toFixed(2)}`
+        //         worksheet1.addRow(item);
+        //     }
+            
+            
+        // }
     }
     async generateDailySummaryReports(data) {
         const workbook = new ExcelJS.Workbook();
         const {organization_id , date1 , date2 } = data 
-        let transactions =await transaction.loadAllTransactionsPerDate(organization_id, date1, date2)
-        transactions.forEach(item => { 
-            let net_sales_services =Math.abs(Number(item.service_total_amount) - Number(item.total_commissions_service))
-            let net_sales_otc =Math.abs(Number(item.otc_total_amount) - Number(item.total_commissions_otc))
-            item.transaction_net_sales_services = `₱${net_sales_services}`
-            item.transaction_net_sales_otc = `₱${Number(net_sales_otc)}`
-            item.transaction_total_amount = `₱${Number(item.transaction_total_amount)}`
-            item.total_commissions_service = `₱${Number(item.total_commissions_service)}`
-            item.total_commissions_otc = `₱${Number(item.total_commissions_otc)}`
-            let total_net_sales = Math.abs(Number(net_sales_services) + Number(net_sales_otc))
-            item.transaction_total_net_sales = `₱${Number(total_net_sales)}`
-            item.service_total_amount = `₱${Number(item.service_total_amount)}`
-            item.otc_total_amount = `₱${Number(item.otc_total_amount)}`
-
-        })
-        await this.createTransactionExportableExcelFile('Daily Summary', transactions, workbook)
+        let services_sales_tracking = await transaction.getAllClientTransactionServices(organization_id, date1, date2)
+        for (let x = 0; x < services_sales_tracking.length; x++){
+            let data= services_sales_tracking[x]
+            let serviceCommissionData = await transaction.getAllEmployeeCommissions(data.transaction_id, organization_id, date1, date2 ,'service')
+            for (let y = 0; y < serviceCommissionData.length; y++){
+                let commision = serviceCommissionData[y]
+                if (commision.position == 'Senior') {
+                    data.Senior = commision.employee_name
+                    data['Sr. Service Commission'] = commision.commission_total_amount
+                    data.commision_percent_sr = commision.commissions
+                } else {
+                    data.Junior = commision.employee_name
+                    data['Jr. Service Commission'] = commision.commission_total_amount
+                     data.commision_percent_jr = commision.commissions
+                }
+            }
+        }
+        let otc_sales_tracking = await transaction.getAllClientTransactionOTC(organization_id, date1, date2)
+         for (let x = 0; x < otc_sales_tracking.length; x++){
+            let data= otc_sales_tracking[x]
+            let otcCommissionData = await transaction.getAllEmployeeCommissions(data.transaction_id, organization_id, date1, date2 ,'otc')
+             for (let y = 0; y < otcCommissionData.length; y++){
+                let commision = otcCommissionData[y]
+                if (commision.position == 'Senior') {
+                    data.Senior = commision.employee_name
+                    data['Sr. Service Commission'] = commision.commission_total_amount
+                    data.commision_percent_sr = commision.commissions
+                } else {
+                    data.Junior = commision.employee_name
+                    data['Jr. Service Commission'] = commision.commission_total_amount
+                     data.commision_percent_jr = commision.commissions
+                }
+            }
+        }
+        console.log(services_sales_tracking , 'sales_tracking' , otc_sales_tracking, 'otc_sales_tracking')
+        await this.createTransactionExportableExcelFile( workbook  ,services_sales_tracking , otc_sales_tracking)
         return await workbook.xlsx.writeBuffer()
     }
 

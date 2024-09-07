@@ -43,7 +43,7 @@ module.exports = new class Services {
    async loadServices( organization_id, page, itemsPerPage) {
         const offset = (page - 1) * itemsPerPage;
         // return new Promise((resolve, reject) => { 
-            let sql = `SELECT A.*,B.*,C.* FROM tbl_services A 
+            let sql = `SELECT A.*,A.status AS 'service_status',B.*,C.* FROM tbl_services A 
             INNER JOIN tbl_category B ON A.category_id = B.category_id
             INNER JOIN tbl_organizations C on A.organization_id = C.organization_id
             where A.organization_id = '${organization_id}'
@@ -120,7 +120,7 @@ async function updateService( data ){
         let updates=[]
         for( const key in data ){
             // if(typeof data[key] === "string") console.log( key , data[key])
-            updates.push(`${key}=${ typeof data[key]==='string' ? `'${data[key]}'` : data[key]}`)
+            updates.push(`${key}=${ typeof data[key]==='string' ? `"${data[key]}"` : data[key]}`)
             // console.log(`'${key}'=${ typeof data[key]==='string' ? `'${data[key]}'` : data[key]}` )
         }
         sql+=updates.join(',')

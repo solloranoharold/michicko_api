@@ -54,7 +54,8 @@ app.use('/transactions', require('./routes/transactions/'))
 app.use('/epayment', require('./routes/epayment/'))
 app.use('/reports', require('./routes/reports/'))
 app.use('/import', require('./routes/import/'))
-
+app.use('/expenses', require('./routes/expenses/') )
+app.use('/discounts' , require('./routes/discounts'))
 
 
 

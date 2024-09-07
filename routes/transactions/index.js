@@ -105,6 +105,17 @@ router.post('/createTransactionsCommissions', async (req, res) => {
         res.status(403).json({error:"Unauthorized Access"})
       }
 })
+router.post('/createTransactionsOtherFees', async (req, res) => { 
+  let token = req.headers.authorization
+  let verify = verifyCookies(token)
+  if (typeof verify === 'object') {
+        let data = await classTransaction.createTransactionsOtherFees(req.body)
+        res.send(data)
+      } else {
+        res.status(403).json({error:"Unauthorized Access"})
+      }
+})
+// 
 router.post('/getAffectedServicesProduct', async (req, res) => { 
   let token = req.headers.authorization
   let verify = verifyCookies(token)

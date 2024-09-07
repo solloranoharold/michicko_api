@@ -40,7 +40,7 @@ router.post('/login' , async(req,res)=>{
       res.send({  error: "USERNAME AND PASSWORD NOT MATCHED" })
     else {
        let user = JSON.parse(JSON.stringify(data[0]))
-      let token = jwt.sign( user, mySecretKey ,{ expiresIn:'1d'})
+      let token = jwt.sign( user, mySecretKey ,{ expiresIn:'7d'})
       user.token = token 
       res.send(user)
       
