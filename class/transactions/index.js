@@ -382,7 +382,6 @@ module.exports = new class Transaction {
             WHERE A.organization_id= '${organization_id}' 
             AND A.transaction_created_date between '${date1}' and '${date2}'
             GROUP BY transaction_id ASC 
-            ORDER BY A.transaction_created_date ASC
         `
         console.log(sql)
          return  await queryData(sql)
@@ -403,7 +402,6 @@ module.exports = new class Transaction {
             WHERE A.organization_id= '${organization_id}' 
             AND A.transaction_created_date between '${date1}' and '${date2}'
             GROUP BY A.transaction_id ASC
-            ORDER BY A.transaction_created_date ASC
         `
          console.log(sql)
          return  await queryData(sql)
