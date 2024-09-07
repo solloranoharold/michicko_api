@@ -381,7 +381,8 @@ module.exports = new class Transaction {
             INNER JOIN tbl_clients C on B.client_id = C.client_id
             WHERE A.organization_id= '${organization_id}' 
             AND A.transaction_created_date between '${date1}' and '${date2}'
-            GROUP BY transaction_id ASC 
+            GROUP BY transaction_id  
+            ORDER BY A.transaction_created_date ASC
         `
         console.log(sql)
          return  await queryData(sql)
@@ -401,7 +402,8 @@ module.exports = new class Transaction {
             INNER JOIN tbl_clients C on B.client_id = C.client_id
             WHERE A.organization_id= '${organization_id}' 
             AND A.transaction_created_date between '${date1}' and '${date2}'
-            GROUP BY A.transaction_id ASC
+            GROUP BY A.transaction_id 
+            ORDER BY A.transaction_created_date ASC
         `
          console.log(sql)
          return  await queryData(sql)
