@@ -20,13 +20,16 @@ module.exports = new class Reports{
             { header: 'Quantity', key: 'quantity', width: 10,style: { alignment: { horizontal: 'center' } } },
             { header: 'Previous Stocks', key: 'previous_stock', width: 20,style: { alignment: { horizontal: 'center' } } },
             { header: 'Total Stocks', key: 'current_stock', width: 20,style: { alignment: { horizontal: 'center' } } },
+            { header: 'Total Price', key: 'total_price', width: 15 },
             { header: 'Type', key: 'type', width: 10 },
             { header: 'Updated By', key: 'fullname', width: 25 },
            
         ];
+        if(sheetName == 'OTC Products')  worksheet.columns.splice( 7,1 )
         for (let x = 0; x < arrayData.length; x++){
             let item = arrayData[x]
             item.fullname = `${item.last_name} ${item.first_name}`
+            item.total_price = `₱${parseFloat(item.total_price).toFixed(2)}`
              worksheet.addRow(item);
         }
     }
