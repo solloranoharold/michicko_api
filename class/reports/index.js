@@ -6,12 +6,14 @@ const transaction = require('../transactions')
 const moment = require('moment')
 // const connection = require('../dbConnections')
 const ExcelJS = require('exceljs');
+const _ = require('lodash')
 const {queryData } = require('../evaluateConnection')
 
 module.exports = new class Reports{
     //INVENTORY
     async createServiceExportableExcelFile(sheetName , arrayData ,id , workbook ) {
         const worksheet = workbook.addWorksheet(sheetName);
+        if(sheetName=='Service Products')
         worksheet.columns = [
             { header: 'Date', key: 'date_created', width: 15 },
             { header: 'Product ID', key: id, width: 10 },
@@ -20,17 +22,44 @@ module.exports = new class Reports{
             { header: 'Quantity', key: 'quantity', width: 10,style: { alignment: { horizontal: 'center' } } },
             { header: 'Previous Stocks', key: 'previous_stock', width: 20,style: { alignment: { horizontal: 'center' } } },
             { header: 'Total Stocks', key: 'current_stock', width: 20,style: { alignment: { horizontal: 'center' } } },
+            { header: 'Price', key: 'price', width: 15 },
             { header: 'Total Price', key: 'total_price', width: 15 },
             { header: 'Type', key: 'type', width: 10 },
             { header: 'Updated By', key: 'fullname', width: 25 },
            
         ];
-        if(sheetName == 'OTC Products')  worksheet.columns.splice( 7,1 )
+        else 
+         worksheet.columns = [
+            { header: 'Date', key: 'date_created', width: 15 },
+            { header: 'Product ID', key: id, width: 10 },
+            { header: 'Product Name', key: 'product_name', width: 32 },
+            { header: 'Branch', key: 'organization_name', width: 40 },
+            { header: 'Quantity', key: 'quantity', width: 10,style: { alignment: { horizontal: 'center' } } },
+            { header: 'Previous Stocks', key: 'previous_stock', width: 20,style: { alignment: { horizontal: 'center' } } },
+            { header: 'Total Stocks', key: 'current_stock', width: 20,style: { alignment: { horizontal: 'center' } } },
+            { header: 'SRP', key: 'srp', width: 15 },
+             { header: 'Total SRP Price', key: 'total_srp_price', width: 15 },
+             { header: 'Unit Price', key: 'price', width: 15 },
+            { header: 'Total Unit Price', key: 'total_unit_price', width: 15 },
+            { header: 'Type', key: 'type', width: 10 },
+            { header: 'Updated By', key: 'fullname', width: 25 },
+           
+            ];
+        
         for (let x = 0; x < arrayData.length; x++){
             let item = arrayData[x]
             item.fullname = `${item.last_name} ${item.first_name}`
-            item.total_price = `₱${parseFloat(item.total_price).toFixed(2)}`
-             worksheet.addRow(item);
+            if (sheetName == 'Service Products') {
+                item.total_price = `₱${parseFloat(item.total_price).toFixed(2)}`
+                item.price = `₱${parseFloat(item.price).toFixed(2)}`
+            }
+            else {
+                item.total_srp_price = `₱${parseFloat(item.total_srp_price).toFixed(2)}`
+                item.total_unit_price = `₱${parseFloat(item.total_unit_price).toFixed(2)}`
+                item.srp = `₱${parseFloat(item.srp).toFixed(2)}`
+                item.price = `₱${parseFloat(item.price).toFixed(2)}`
+            }
+            worksheet.addRow(item);
         }
     }
     async generateInventoryReports(data) {
@@ -38,10 +67,10 @@ module.exports = new class Reports{
 
         let service_inventory_data = await this.getInventoryService(data)
         console.log(service_inventory_data, ' service_inventory_data')
-        await this.createServiceExportableExcelFile('Service Products' , service_inventory_data ,"inventory_id" , workbook)
+        await this.createServiceExportableExcelFile('Service Products' , _.orderBy(service_inventory_data , ['date_created'],['asc']) ,"inventory_id" , workbook)
         let otc_inventory_date = await this.getInventoryOTC(data)
         console.log(otc_inventory_date , 'otc_inventory_date')
-        await this.createServiceExportableExcelFile('OTC Products' , otc_inventory_date ,'product_id' , workbook  )
+        await this.createServiceExportableExcelFile('OTC Products' , _.orderBy(otc_inventory_date , ['date_created'],['asc']) ,'product_id' , workbook  )
         
         return await workbook.xlsx.writeBuffer()
     }
@@ -97,10 +126,14 @@ module.exports = new class Reports{
                 and A.product_id = '${item.product_id}'
                 and A.date_created between '${date1}' and '${date2}'
                 and A.status = 1 
+                 ORDER BY A.date_created ASC
             `
         console.log(sql)
         let results = await queryData(sql)
-        results.forEach(item => item.quantity = `-${item.less_quantity}pcs`)
+        results.forEach(item => {
+            item.quantity = `-${item.less_quantity}pcs`
+            item.date_created= moment(item.date_created).format('YYYY-MM-DD HH:mm:ss')
+        })
         return await Promise.resolve(results)
         //       connection.query(sql, function (error, results, fields) {
         //         //  console.log(results , 'searchAccount')
@@ -122,10 +155,14 @@ module.exports = new class Reports{
              where A.organization_id= '${organization_id}'
             and A.product_id='${item.product_id}'
             and A.date_created between '${date1}' and '${date2}'
+            ORDER BY A.date_created ASC
             `
         console.log(sql)
          let results = await queryData(sql)
-        results.forEach(item => item.quantity = `+${item.added_quantity}pcs`)
+        results.forEach(item => {
+            item.quantity = `+${item.added_quantity}pcs`
+            item.date_created= moment(item.date_created).format('YYYY-MM-DD HH:mm:ss')
+        })
         return await Promise.resolve(results)
         //       connection.query(sql, function (error, results, fields) {
         //         //  console.log(results , 'searchAccount')
@@ -173,12 +210,16 @@ module.exports = new class Reports{
              inner join tbl_organizations C on C.organization_id = A.organization_id
              inner join tbl_employees D on A.updated_by = D.employee_id
              where A.organization_id= '${organization_id}'
-            and A.inventory_id='${item.inventory_id}'
-            and A.date_created between '${date1}' and '${date2}'
+             and A.inventory_id='${item.inventory_id}'
+             and A.date_created between '${date1}' and '${date2}'
+             ORDER BY A.date_created ASC
             `
         console.log(sql)
          let results = await queryData(sql)
-        results.forEach(item => item.quantity = `+${item.added_quantity}pcs`)
+        results.forEach(item => {
+            item.quantity = `+${item.added_quantity}pcs`
+            item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss')
+        })
         return await Promise.resolve(results)
         //       connection.query(sql, function (error, results, fields) {
         //         //  console.log(results , 'searchAccount')
@@ -201,10 +242,14 @@ module.exports = new class Reports{
                 and A.inventory_id = '${item.inventory_id}'
                 and A.date_created between '${date1}' and '${date2}' 
                 and A.status =1 
+                 ORDER BY A.date_created ASC
             `
         console.log(sql)
          let results = await queryData(sql)
-       results.forEach(item => item.quantity = `-${item.less_quantity}${item.unit.toLowerCase()}`)
+        results.forEach(item => {
+            item.quantity = `-${item.less_quantity}${item.unit.toLowerCase()}`
+            item.date_created = moment(item.date_created).format('YYYY-MM-DD HH:mm:ss')
+       })
         return await Promise.resolve(results)
         //       connection.query(sql, function (error, results, fields) {
         //         //  console.log(results , 'searchAccount')
