@@ -49,6 +49,19 @@ router.post('/login' , async(req,res)=>{
     // res.redirect(`/adminDashboard`)
 })
 
+// getManagerApproval
+router.get('/getManagerApproval/:employee_id/:password/:organization_id', async(req, res) => { 
+  let token = req.headers.authorization
+  let { employee_id , password ,  organization_id} = req.params 
+  let verify = verifyCookies(token)
+  if (typeof verify === 'object') {
+    let data = await Accounts.getManagerApproval(employee_id , password , organization_id) 
+    res.send(data)
+  } else {
+    res.status(403).json({error:"Unauthorized Access"})
+  }
+})
+
 router.get('/readExistingAccount/:username', async(req, res) => { 
   let token = req.headers.authorization
   let { username } = req.params 

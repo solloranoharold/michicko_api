@@ -19,10 +19,33 @@ module.exports = new class Accounts {
         return await status 
     }
 
+    async getManagerApproval(employee_id, password, organization_id) {
+        let sql = `SELECT * FROM tbl_accounts where 
+        employee_id='${employee_id}' 
+        and organization_id = '${organization_id}'
+        and position_id='2'
+        `
+        console.log(sql)
+        let results = await queryData(sql)
+        if (results.length) {
+            let decryptedPassword = decryptPassword(results[0].password)
+            if (decryptedPassword == password) {
+                delete results[0].password
+                 return Promise.resolve(results)
+            } else {
+                 return Promise.resolve([])
+            }
+        } else {
+            return Promise.resolve([])
+        }
+
+    }
+
     async getAccountsPerOrg(  organization_id  ) {
         let sql = `SELECT * FROM tbl_accounts where organization_id = '${organization_id}'`
         return await queryData(sql)
     }
+
     async loginUsers( username , password ){
             let sql = `SELECT A.*,B.*,C.*,D.*,B.position AS account_position FROM tbl_accounts A 
             INNER JOIN tbl_positions B ON B.position_id = A.position_id 

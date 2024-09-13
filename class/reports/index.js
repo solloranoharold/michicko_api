@@ -18,7 +18,7 @@ module.exports = new class Reports{
             { header: 'Product Name', key: 'product_name', width: 32 },
             { header: 'Branch', key: 'organization_name', width: 40 },
             { header: 'Quantity', key: 'quantity', width: 10,style: { alignment: { horizontal: 'center' } } },
-            { header: 'Current Stocks', key: 'previous_stock', width: 20,style: { alignment: { horizontal: 'center' } } },
+            { header: 'Previous Stocks', key: 'previous_stock', width: 20,style: { alignment: { horizontal: 'center' } } },
             { header: 'Total Stocks', key: 'current_stock', width: 20,style: { alignment: { horizontal: 'center' } } },
             { header: 'Type', key: 'type', width: 10 },
             { header: 'Updated By', key: 'fullname', width: 25 },
@@ -65,7 +65,7 @@ module.exports = new class Reports{
                 arrayData = arrayData.concat(item)
         }
         arrayData.forEach(item => {
-           item.type = 'added'
+           item.type =item.added_quantity == 0 ? 'reset': 'added'
         })
         return  await Promise.resolve(arrayData)
     }
@@ -77,7 +77,7 @@ module.exports = new class Reports{
             arrayData = arrayData.concat(item)
         }
          arrayData.forEach(item => {
-           item.type = 'used'
+           item.type = 'sell'
         })
         return await Promise.resolve( arrayData)
     }
@@ -140,7 +140,7 @@ module.exports = new class Reports{
                 arrayData = arrayData.concat(item)
         }
         arrayData.forEach(item => {
-           item.type = 'added'
+           item.type  =item.added_quantity == 0 ? 'reset':'added'
         })
         return await Promise.resolve( arrayData)
         

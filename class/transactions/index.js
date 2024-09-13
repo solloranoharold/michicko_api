@@ -129,7 +129,7 @@ module.exports = new class Transaction {
             
             item[0].date_created = moment(item[0].date_created).format('YYYY-MM-DD HH:mm:ss')
             item[0].updated_date = moment().format('YYYY-MM-DD HH:mm:ss')
-            if (parseInt(item[0].quantity) <= 5) await this.createNotification(item[0] ,'/inventory')
+            if (parseInt(item[0].quantity) <= item[0].minimum_qty) await this.createNotification(item[0] ,'/inventory')
             await this.evaluateTransactionsUpdate(item, 'inventory_id', 'tbl_inventory')
             promises = item
             console.log(promises , ' getAffectedServicesProduct ')
@@ -155,7 +155,7 @@ module.exports = new class Transaction {
                     data[x].current_stock = item[0].quantity
                 }
                 
-                if (parseInt(item[0].quantity) <= 5) await this.createNotification(item[0]  ,'/products')
+                if (parseInt(item[0].quantity) <= item[0].minimum_qty) await this.createNotification(item[0]  ,'/products')
                 await this.evaluateTransactionsUpdate(item, 'product_id', 'tbl_products')
                 promises = item
               
