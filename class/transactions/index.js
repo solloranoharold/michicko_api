@@ -188,9 +188,9 @@ module.exports = new class Transaction {
     async loadNotifications(organization_id) {
         //  return new Promise(resolve => { 
              
-            
+            let endOfMonth = moment().endOf('month')
              let sql = `select A.* from tbl_notifications A 
-              where A.created_date BETWEEN '${moment().format('YYYY-MM-01 00:00:00')}' and '${moment().format('YYYY-MM-31 23:59:59')}'
+              where A.created_date BETWEEN '${moment().format('YYYY-MM-01 00:00:00')}' and '${moment(endOfMonth).format('YYYY-MM-DD 23:59:59')}'
               `
              if(organization_id!=0) sql+=` and A.organization_id = '${organization_id}'`
              sql += ` ORDER BY  A.created_date DESC`
