@@ -1,6 +1,6 @@
 const connection = require('../dbConnections')
 const { queryData } = require('../evaluateConnection')
-const moment = require('moment')
+// const moment = require('moment')
 module.exports = new class Services { 
 
     async readServices(service, organization_id ) {
@@ -12,6 +12,15 @@ module.exports = new class Services {
         //         resolve(results)
         //     })  
         //  })
+    }
+
+    async loadDeletedServices(organization_id) {
+         let sql = `SELECT A.*,A.status AS 'service_status',B.*,C.* FROM tbl_services A 
+            INNER JOIN tbl_category B ON A.category_id = B.category_id
+            INNER JOIN tbl_organizations C on A.organization_id = C.organization_id
+            where A.organization_id = '${organization_id}' and deleted_date IS NOT NULL
+            `
+        return await queryData(sql)   
     }
     
     async addUpdateService(data) {
@@ -26,14 +35,13 @@ module.exports = new class Services {
        }
 
     }
-    async getServicesTotalCount( organization_id , search , deleted_date = false) {
+    async getServicesTotalCount( organization_id , search ) {
         // return new Promise((resolve , reject) => { 
             let sql = `SELECT count(*) AS TOTAL FROM tbl_services A where organization_id = '${organization_id}'`
             if(search!='undefined') sql+=` and A.service_name LIKE '%${search}%'`
-            if (deleted_date)  sql+=` and A.deleted_date is NOT NULL`
-            else sql+=` and A.deleted_date IS NULL`
+            sql+=` and A.deleted_date IS NULL`
             console.log(sql)
-        let results = await queryData(sql)
+            let results = await queryData(sql)
         return await Promise.resolve(results[0])
 
         //     connection.query(sql, function (error, results, fields) {
@@ -43,7 +51,7 @@ module.exports = new class Services {
         //     })
         // })
     }
-   async loadServices( organization_id, page, itemsPerPage ,deleted_date = false) {
+   async loadServices( organization_id, page, itemsPerPage ) {
         const offset = (page - 1) * itemsPerPage;
         // return new Promise((resolve, reject) => { 
             let sql = `SELECT A.*,A.status AS 'service_status',B.*,C.* FROM tbl_services A 
@@ -51,8 +59,7 @@ module.exports = new class Services {
             INNER JOIN tbl_organizations C on A.organization_id = C.organization_id
             where A.organization_id = '${organization_id}'
             `
-            if (deleted_date)   sql+=` and A.deleted_date is NOT NULL`
-            else sql+=` and A.deleted_date IS NULL`
+            sql += ` and A.deleted_date IS NULL`
             sql += ` ORDER BY A.service_id LIMIT ${itemsPerPage} OFFSET ${offset}`
             
        console.log(sql)
@@ -65,15 +72,14 @@ module.exports = new class Services {
         //     })
         // })  
     }
-    async searchServices( organization_id , search  , deleted_date = false  ) {
+    async searchServices( organization_id , search   ) {
         // return new Promise((resolve, reject) => { 
             let sql = `SELECT A.*,B.*,C.*,A.status AS 'service_status' FROM tbl_services A 
             INNER JOIN tbl_category B ON A.category_id = B.category_id
             INNER JOIN tbl_organizations C on A.organization_id = C.organization_id
             WHERE A.service_name LIKE '%${search}%' AND A.organization_id ='${organization_id}'`
         
-            if (deleted_date) sql+=` and A.deleted_date is NOT NULL`
-            else sql+=` and A.deleted_date IS NULL`
+            sql+=` and A.deleted_date IS NULL`
         console.log(sql)
         return await queryData(sql)
         //     connection.query(sql, function (error, results, fields) {

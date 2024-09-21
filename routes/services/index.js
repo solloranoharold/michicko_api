@@ -94,4 +94,16 @@ router.get('/loadAllServices/:organization_id', async (req, res) => {
       res.status(403).json({error:"Unauthorized Access"})
     }
 })
+router.get('/loadDeletedServices/:organization_id', async (req, res) => { 
+    let token = req.headers.authorization
+  let verify = verifyCookies(token)
+   if (typeof verify === 'object') {
+      let data = await classServices.loadDeletedServices( req.params.organization_id)
+      // console.log(data ,'loadEmployees' )
+      res.send(data)
+    } else {
+      res.status(403).json({error:"Unauthorized Access"})
+    }
+})
+// 
 module.exports = router
