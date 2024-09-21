@@ -7,7 +7,10 @@ module.exports = new class Inventory {
     async productHistoryCreate( data ) {
           return await insertProduct( data , 'tbl_inventory_history')
     }
-
+    async loadDeletedInventory(organization_id) {
+         let sql = `select * from tbl_inventory where  organization_id = '${organization_id}' and deleted_date IS NOT NULL`
+            return await queryData(sql) 
+    }
 
      async readProduct(product, organization_id) {
         // return new Promise((resolve, reject) => { 
@@ -21,7 +24,7 @@ module.exports = new class Inventory {
     }
     async getInventoryTotalCount( organization_id , search ){
         // return new Promise((resolve , reject)=>{ 
-            let  sql=`SELECT COUNT(*) AS TOTAL FROM tbl_inventory WHERE organization_id= '${organization_id}'`
+            let  sql=`SELECT COUNT(*) AS TOTAL FROM tbl_inventory WHERE organization_id= '${organization_id}' and deleted_date IS NULL`
         if (search != 'undefined') sql += ` and product_name LIKE '%${search}%'`
         let results =  await queryData(sql)
         return await Promise.resolve(results[0])
@@ -36,7 +39,8 @@ module.exports = new class Inventory {
     async loadInventory( organization_id , page , itemsPerPage ){
         const offset = (page - 1) * itemsPerPage;
         // return new Promise((resolve ,reject)=>{ 
-            let  sql=`SELECT *  FROM tbl_inventory WHERE organization_id= '${organization_id}' 
+        let sql = `SELECT *  FROM tbl_inventory WHERE organization_id= '${organization_id}'
+            and deleted_date IS NULL 
             ORDER BY inventory_id LIMIT ${itemsPerPage} OFFSET ${offset }
             `
 
@@ -62,7 +66,9 @@ module.exports = new class Inventory {
         // return new Promise((resolve, reject) => { 
             let sql = `select * from tbl_inventory
             WHERE product_name LIKE '%${search}%'
-             AND organization_id ='${organization_id}'`
+             AND organization_id ='${organization_id}' 
+             AND deleted_date IS NULL
+             `
         console.log(sql)
         return await queryData(sql)
         //     connection.query(sql, function (error, results, fields) {
@@ -101,7 +107,7 @@ module.exports = new class Inventory {
     async loadAllInvetory(organization_id) {
         // return new Promise((resolve, reject) => { 
             let sql = `select * from tbl_inventory
-            WHERE organization_id ='${organization_id}'`
+            WHERE organization_id ='${organization_id}' AND deleted_date IS NULL`
         console.log(sql)
         return await queryData(sql)
         //     connection.query(sql, function (error, results, fields) {

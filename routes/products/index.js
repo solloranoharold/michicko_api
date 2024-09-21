@@ -100,5 +100,17 @@ router.post('/productHistoryCreate', async(req, res) => {
         res.status(403).json({error:"Unauthorized Access"})
     } 
 })
+router.get('/loadDeletedProducts/:organization_id', async (req, res) => { 
+  const {  organization_id  } = req.params 
+  let token = req.headers.authorization
+  let verify = verifyCookies(token)
+  if (typeof verify === 'object') {
+        let data = await classInventory.loadDeletedProducts(organization_id)
+        // console.log(data ,'loadEmployees' )
+        res.send(data)
+      } else {
+        res.status(403).json({error:"Unauthorized Access"})
+      }
+})
 // 
 module.exports = router

@@ -42,7 +42,19 @@ router.get('/readProduct/:product/:organization_id', async (req, res) => {
     } 
    
 })
-
+router.get('/loadDeletedInventory/:organization_id', async (req, res) => {
+    const { organization_id } = req.params 
+    let token = req.headers.authorization
+    let verify = verifyCookies(token)
+    if (typeof verify === 'object') {
+        let data = await classInventory.loadDeletedInventory(  organization_id)
+        res.status(200).json(data)
+    } else {
+        res.status(403).json({error:"Unauthorized Access"})
+    } 
+   
+})
+// 
 router.post('/addUpdateProduct', async(req, res) => { 
     let token = req.headers.authorization
     let verify = verifyCookies(token)
