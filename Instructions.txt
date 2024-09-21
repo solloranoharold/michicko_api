@@ -1,0 +1,7 @@
+1. lalagay anong category as ID 
+2. Service Name 
+3. Price
+
+Example row 
+ category_id  service_name , price 
+    1          test_service   1000

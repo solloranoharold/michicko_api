@@ -20,7 +20,7 @@ router.use(
     extended: false,
   })
 );
-router.get('/loadAllInvetory/:organization_id', async (req, res) => { 
+router.get('/loadAllInvetory/:organization_ida', async (req, res) => { 
   let token = req.headers.authorization
     let verify = verifyCookies(token)
     if (typeof verify === 'object') {
