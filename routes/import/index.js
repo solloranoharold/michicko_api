@@ -16,17 +16,6 @@ const ExcelJS = require('exceljs');
 
 const mysql = require('mysql2/promise')
 let connection;
-async function getConnection() {
-  if (!connection || connection.end) {
-    connection = await mysql.createConnection({
-      host: 'bd3bl6vigzn6awaepqc3-mysql.services.clever-cloud.com',
-      user: 'ucdxkv4iqr8jh0ev',
-      password: 'm8BSFehKKIEFM5ku1r19',
-      database: 'bd3bl6vigzn6awaepqc3'
-    });
-  }
-  return connection;
-}
 
 
 
