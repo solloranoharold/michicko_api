@@ -3,9 +3,8 @@ module.exports = {
         {
             name: 'pos-inventory-api',
             script: 'npm',
-            args: 'run dev',
+            args: 'run index',
             env: {
-                NODE_ENV: 'development',
                 host: "127.0.0.1",
                 user:"root",
                 password:'',
