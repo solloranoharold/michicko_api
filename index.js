@@ -66,4 +66,4 @@ app.use('/discounts' , require('./routes/discounts'))
 
 
 
-httpServer.listen(port, () => console.log('Secure server 🚀🔑 on port:' + port ))
+httpServer.listen(port,'0.0.0.0', () => console.log('Secure server 🚀🔑 on port:' + port ))
