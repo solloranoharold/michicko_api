@@ -12,7 +12,7 @@ const { verifyCookies } = require('../verifyToken')
 
 // router.use(cookieParser())
 router.use(cors({
- origin:  process.env.api_host, // Frontend URL
+//  origin:  process.env.api_host, // Frontend URL
   credentials: true, // Allow credentials (cookies)
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
