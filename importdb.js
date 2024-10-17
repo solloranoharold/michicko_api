@@ -1,21 +1,21 @@
+require('dotenv').config()
 const fs = require('fs-extra')
-const { queryData } = require('./class/evaluateConnection')
+var { host, user, password, database } = process.env
+var mysql  = require('mysql');
+const targetDbConnection = mysql.createConnection({
+    host: host,
+      user: user,
+      password: password,
+      database: database
+});
 
-async function migrateDatabase() {
-    let sqlScript = await readDatabaseSQLScript()
-    return await queryData( sqlScript )
-}
+targetDbConnection.connect
+fs.readFile('./michikodb.sql', 'utf8', (err, sql) => {
+    if (err) throw err;
 
-function readDatabaseSQLScript() {
-    return new Promise(resolve => {
-        fs.readFile('./michikodb.sql', 'utf8', (err, sql) => {
-            if (err) throw err;
-            resolve(sql)
-        });
-    })
-}
-
-
-migrateDatabase().then(() => { 
-    console.log('Database has been migrated')
-})
+    targetDbConnection.query(sql, (error, results) => {
+        if (error) throw error;
+        console.log('Dump imported successfully:', results);
+        targetDbConnection.end();
+    });
+});
