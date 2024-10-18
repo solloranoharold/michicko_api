@@ -23,7 +23,8 @@ fs.readFile('./michikodb.sql', 'utf8', (err, data) => {
   const sqlStatements = data.split(';').map(statement => statement.trim()).filter(statement => statement);
 
   // Execute each SQL statement
-  sqlStatements.forEach((statement, index) => {
+    sqlStatements.forEach((statement, index) => {
+      console.log(statement)
     connection.query(statement, (error, results) => {
       if (error) {
         console.error(`Error executing statement ${index + 1}:`, error);
