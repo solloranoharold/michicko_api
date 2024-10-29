@@ -8,7 +8,8 @@ module.exports = new class Inventory {
     }
      async readProduct(product, organization_id) {
         // return new Promise((resolve, reject) => { 
-            let sql = `select * from tbl_products where product_name = '${product}' and organization_id = '${organization_id}'`
+         let sql = `select * from tbl_products where product_name = '${product}' and organization_id = '${organization_id}'`
+         console.log(sql)
             return await queryData(sql)
          //     connection.query(sql, function (error, results, fields) {
         //         if(error) reject(error);
