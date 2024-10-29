@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: bd3bl6vigzn6awaepqc3-mysql.services.clever-cloud.com:3306
--- Generation Time: Oct 17, 2024 at 06:47 PM
+-- Generation Time: Oct 29, 2024 at 01:40 AM
 -- Server version: 8.0.22-13
 -- PHP Version: 8.2.21
 
@@ -767,6 +767,8 @@ CREATE TABLE `tbl_product_history` (
   `organization_id` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `srp` double(10,2) NOT NULL DEFAULT '0.00',
   `price` double(10,2) NOT NULL DEFAULT '0.00',
+  `total_srp_price` double(10,2) DEFAULT NULL,
+  `total_unit_price` double(10,2) DEFAULT NULL,
   `total_price` double(10,2) NOT NULL DEFAULT '0.00',
   `updated_by` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `date_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -776,20 +778,20 @@ CREATE TABLE `tbl_product_history` (
 -- Dumping data for table `tbl_product_history`
 --
 
-INSERT INTO `tbl_product_history` (`product_id`, `added_quantity`, `previous_stock`, `current_stock`, `organization_id`, `srp`, `price`, `total_price`, `updated_by`, `date_created`) VALUES
-('00000001', 6, 0.00, 6.00, 'lzp4y0cjqyenjn', 0.00, 0.00, 0.00, '00000004', '2024-09-24 11:33:26'),
-('00000002', 10, 0.00, 10.00, 'lzp4y0cjqyenjn', 0.00, 0.00, 0.00, '00000004', '2024-09-24 11:35:25'),
-('00000003', 3, 0.00, 3.00, 'lzp4y0cjqyenjn', 0.00, 0.00, 0.00, '00000004', '2024-09-24 11:38:07'),
-('00000004', 2, 0.00, 2.00, 'lzp4y0cjqyenjn', 0.00, 0.00, 0.00, '00000004', '2024-09-24 11:39:18'),
-('00000005', 7, 0.00, 7.00, 'lzp4y0cjqyenjn', 0.00, 0.00, 0.00, '00000004', '2024-09-24 11:46:12'),
-('00000006', 7, 0.00, 7.00, 'lzp4y0cjqyenjn', 0.00, 0.00, 0.00, '00000004', '2024-09-24 11:46:47'),
-('00000007', 1, 0.00, 1.00, 'lzp4y0cjqyenjn', 0.00, 0.00, 0.00, '00000004', '2024-09-24 11:47:25'),
-('00000008', 0, 0.00, 0.00, 'lzp4y0cjqyenjn', 0.00, 0.00, 0.00, '00000004', '2024-09-24 11:48:16'),
-('00000009', 0, 0.00, 0.00, 'lzp4y0cjqyenjn', 0.00, 0.00, 0.00, '00000004', '2024-09-24 11:49:47'),
-('00000010', 4, 0.00, 4.00, 'lzp4y0cjqyenjn', 0.00, 0.00, 0.00, '00000004', '2024-09-24 11:56:45'),
-('00000011', 15, 0.00, 15.00, 'lzp4y0cjqyenjn', 0.00, 0.00, 0.00, '00000004', '2024-09-24 11:57:14'),
-('00000012', 5, 0.00, 5.00, 'lzp4y0cjqyenjn', 0.00, 0.00, 0.00, '00000004', '2024-09-24 11:59:40'),
-('00000013', 1, 0.00, 1.00, 'lzp4y0cjqyenjn', 0.00, 0.00, 0.00, '00000004', '2024-09-24 12:02:14');
+INSERT INTO `tbl_product_history` (`product_id`, `added_quantity`, `previous_stock`, `current_stock`, `organization_id`, `srp`, `price`, `total_srp_price`, `total_unit_price`, `total_price`, `updated_by`, `date_created`) VALUES
+('00000001', 6, 0.00, 6.00, 'lzp4y0cjqyenjn', 0.00, 0.00, NULL, NULL, 0.00, '00000004', '2024-09-24 11:33:26'),
+('00000002', 10, 0.00, 10.00, 'lzp4y0cjqyenjn', 0.00, 0.00, NULL, NULL, 0.00, '00000004', '2024-09-24 11:35:25'),
+('00000003', 3, 0.00, 3.00, 'lzp4y0cjqyenjn', 0.00, 0.00, NULL, NULL, 0.00, '00000004', '2024-09-24 11:38:07'),
+('00000004', 2, 0.00, 2.00, 'lzp4y0cjqyenjn', 0.00, 0.00, NULL, NULL, 0.00, '00000004', '2024-09-24 11:39:18'),
+('00000005', 7, 0.00, 7.00, 'lzp4y0cjqyenjn', 0.00, 0.00, NULL, NULL, 0.00, '00000004', '2024-09-24 11:46:12'),
+('00000006', 7, 0.00, 7.00, 'lzp4y0cjqyenjn', 0.00, 0.00, NULL, NULL, 0.00, '00000004', '2024-09-24 11:46:47'),
+('00000007', 1, 0.00, 1.00, 'lzp4y0cjqyenjn', 0.00, 0.00, NULL, NULL, 0.00, '00000004', '2024-09-24 11:47:25'),
+('00000008', 0, 0.00, 0.00, 'lzp4y0cjqyenjn', 0.00, 0.00, NULL, NULL, 0.00, '00000004', '2024-09-24 11:48:16'),
+('00000009', 0, 0.00, 0.00, 'lzp4y0cjqyenjn', 0.00, 0.00, NULL, NULL, 0.00, '00000004', '2024-09-24 11:49:47'),
+('00000010', 4, 0.00, 4.00, 'lzp4y0cjqyenjn', 0.00, 0.00, NULL, NULL, 0.00, '00000004', '2024-09-24 11:56:45'),
+('00000011', 15, 0.00, 15.00, 'lzp4y0cjqyenjn', 0.00, 0.00, NULL, NULL, 0.00, '00000004', '2024-09-24 11:57:14'),
+('00000012', 5, 0.00, 5.00, 'lzp4y0cjqyenjn', 0.00, 0.00, NULL, NULL, 0.00, '00000004', '2024-09-24 11:59:40'),
+('00000013', 1, 0.00, 1.00, 'lzp4y0cjqyenjn', 0.00, 0.00, NULL, NULL, 0.00, '00000004', '2024-09-24 12:02:14');
 
 -- --------------------------------------------------------
 
